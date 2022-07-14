@@ -61,8 +61,38 @@ class Processes:
         #seed declaration
         self.randSeed.srand(self.seed_no_)
         
-
+        """ A dictionary with key: Process name and value: array of CPU and IO burst arrays
+            layout:
+            key: Process name
+            value: [arrive time, tau, num burst, currentBurstIndex, [CPU Burst], [IO Burst]]
+                num burst: Number of CPU and IO Burst
+                currentBurstIndex: current burst that the Process is executing"""
+        self.reorganizedData = {}
         
+    # A testing method for puting info into a dict
+    def reorganizeData(self):
+        alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
+        for i in range(self.num_process_):
+            info = []
+            key = alphabet[i]
+            info.append(self.arrival_Time[i])
+            info.append(self.tau)
+            info.append(self.num_Burst[i])
+            
+            currentBurstIndex = 0
+            info.append(currentBurstIndex)
+            
+            info.append(self.CPU_Burst[i]) # a list
+            info.append(self.IO_Burst[i]) # a list
+        
+        self.reorganizedData[key] = info
+
+    # A testing method for puting info into a dict
+    def printReorganizedData(self):
+        #for evey key in processesDict
+        for x in self.reorganizedData:
+            info = "Key: {key} \t Value: {val}".format(key = x, val = self.reorganizedData.get(x))
+            print(info)
     
     def next_exp(self):
         # generate numbers 

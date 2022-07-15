@@ -162,6 +162,16 @@ class Processes:
             lastCPU_Burst = "--> CPU burst {CPUburst}ms".format(CPUburst = self.CPU_Burst[i][-1])
             print(lastCPU_Burst)
 
+def printQueue(Q): #Prints the queue I guess
+    x = 0
+    print("[Q: ", end = "")
+    if(len(Q) == 0):
+        print("Empty]")
+        return
+    while(x < len(Q)-1):
+        print(Q[x], end = " ")
+        x+=1
+    print(Q[len(Q)-1], end = "]\n")
         
         
 if __name__ == "__main__":

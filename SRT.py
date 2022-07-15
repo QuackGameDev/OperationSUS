@@ -1,6 +1,5 @@
-import sys
 from GenProcesses import *
 
-def SRT():
+def SRT(Processes, contextSwitch, alpha):
+    alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     
-

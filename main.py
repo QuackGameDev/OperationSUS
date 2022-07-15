@@ -17,3 +17,10 @@ if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()
     test_Process.print()
+    contextSwitch = int(sys.argv[5])
+    alpha = float(sys.argv[6])
+    timeslice = int(sys.argv[7])
+    #FCFS(test_Process, contextSwitch)
+    #SJF() Add the parameters, I dunno what they are
+    #SRT(test_Process, contextSwitch, alpha)
+    #RR(test_Process, contextSwitch, timeslice)

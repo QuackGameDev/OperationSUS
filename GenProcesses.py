@@ -73,25 +73,28 @@ class Processes:
     def reorganizeData(self):
         alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" 
         for i in range(self.num_process_):
-            info = []
+            info = dict()
             key = alphabet[i]
-            info.append(self.arrival_Time[i])
-            info.append(self.tau)
-            info.append(self.num_Burst[i])
+            info["arrivalTime"] = self.arrival_Time[i]
+            info["tau"] = self.tau
+            info["numBurst"] = self.num_Burst[i]
             
             currentBurstIndex = 0
-            info.append(currentBurstIndex)
+            info["currentBurstIndex"] = currentBurstIndex
             
-            info.append(self.CPU_Burst[i]) # a list
-            info.append(self.IO_Burst[i]) # a list
+            info["CPUBurst"] = self.CPU_Burst[i] # a list
+            info["IOBurst"] = self.IO_Burst[i] # a list
         
-        self.reorganizedData[key] = info
+            self.reorganizedData[key] = info
 
     # A testing method for puting info into a dict
     def printReorganizedData(self):
         #for evey key in processesDict
-        for x in self.reorganizedData:
-            info = "Key: {key} \t Value: {val}".format(key = x, val = self.reorganizedData.get(x))
+        for i in self.reorganizedData:
+            info = "Key: {key}\n".format(key = i) 
+            info += "Value: \n\t"
+            for j in self.reorganizedData.get(i):
+                info += "Key: {keyInner}; Value: {valInner}\n\t".format(keyInner = j, valInner = self.reorganizedData.get(i).get(j))
             print(info)
     
     def next_exp(self):

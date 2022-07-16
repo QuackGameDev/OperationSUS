@@ -17,7 +17,7 @@ random number generator to ensure the same set of processes and interarrival tim
 F
 """
 from GenProcesses import *
-
+import math
 def allIndexOfTargerNum(targetNum, list):
     allIndex = []
     for i in range(len(list)):
@@ -78,6 +78,10 @@ def SJF(Processes, contextSwitchTime):
     timer_for_switch=-1
 
     timer_for_CPU_burst=-1
+
+    actual_burst=-1
+    old_tau =0
+    alpha = 0.5
     
     print("time 0ms: Simulator started for SJF [Q: empty]")
     timer  = 0
@@ -88,7 +92,7 @@ def SJF(Processes, contextSwitchTime):
             # add all of the processes to the queue
             for i in processesNameList:
                 ready_queue.append(alphabet[i])
-                print("time "+str(timer)+"ms: Process "+str(alphabet[i])+" (tau "+str(processesInfo.get(alphabet[i]).get("tau"))+"ms) arrived; added to ready queue "+print_ready_queue(ready_queue)+"}")
+                print("time "+str(timer)+"ms: Process "+str(alphabet[i])+" (tau "+str(processesInfo.get(alphabet[i]).get("tau"))+"ms) arrived; added to ready queue "+print_ready_queue(ready_queue))
                 # print(ready_queue)
                 # print(len(ready_queue))
         if(len(IOqueue)>0):
@@ -96,9 +100,11 @@ def SJF(Processes, contextSwitchTime):
                 if(processesInfo.get(i).get("IOBurst")[processesInfo.get(i).get("currentBurstIndex")]==0):
                     ready_queue.append(i)
                     timer+=2
-                    print("time "+str(timer)+"ms: Process "+i+" completed I/O; added to ready queue "+print_ready_queue(ready_queue)+"}")
+                    print("time "+str(timer)+"ms: Process "+i+" (tau "+str(processesInfo.get(i).get("tau"))+"ms) completed I/O; added to ready queue "+print_ready_queue(ready_queue))
                     processesInfo.get(i)["currentBurstIndex"]+=1
                     IOqueue.remove(i)
+                    for i in IOqueue:
+                        processesInfo.get(i).get("IOBurst")[processesInfo.get(i).get("currentBurstIndex")]-=2
 
        
         if( CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
@@ -108,30 +114,44 @@ def SJF(Processes, contextSwitchTime):
             timer_for_switch=contextSwitch
             
         if CPUburst == True and timer_for_switch==0:
-            print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue)+"}")
+            print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
             timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
+            actual_burst =timer_for_CPU_burst
             
 
         if CPUburst ==True and timer_for_CPU_burst==0:
             if (len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)==0:
                 print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" terminated "+print_ready_queue(ready_queue))
+                completed.append(CPUqueue[0])
                 CPUqueue.pop(0)
                 timer_for_switch=contextSwitch
                 CPUburst = False
             #Time to put into I/O Burst and end the CPU Burst
             else:
-                print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" completed a CPU burst; "+str(len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)+" bursts to go "+print_ready_queue(ready_queue))
+                if(len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)==1:
+                    print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) completed a CPU burst; "+str(len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)+" burst to go "+print_ready_queue(ready_queue))
+                else:
+                    print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) completed a CPU burst; "+str(len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)+" bursts to go "+print_ready_queue(ready_queue))
                 IOqueue.append(CPUqueue[0])
+                old_tau = processesInfo.get(CPUqueue[0]).get("tau")
+                processesInfo.get(CPUqueue[0])["tau"]= math.ceil(alpha * actual_burst +(1-alpha) * old_tau)
+                print("time "+str(timer)+"ms: Recalculated tau for process "+str(CPUqueue[0])+": old tau "+str(old_tau)+"ms; new tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms "+print_ready_queue(ready_queue))
+                print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" switching out of CPU; will block on I/O until time "+str(timer+processesInfo.get(CPUqueue[0]).get("IOBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]+2)+"ms "+print_ready_queue(ready_queue))
+
                 CPUqueue.pop(0)
                 timer_for_switch=contextSwitch
                 CPUburst = False
 
+        if(len(completed)==numProcess):
+            timer+=2
+            print("time "+str(timer)+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
+            allProcessTerminate=True
+        #all the minussy stuff
 
         if len(IOqueue)>0:
             for i in IOqueue:
                 processesInfo.get(i).get("IOBurst")[processesInfo.get(i).get("currentBurstIndex")]-=1
                 
-        
         timer_for_CPU_burst-=1
         timer_for_switch -=1
         timer += 1

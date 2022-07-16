@@ -21,12 +21,11 @@ def SRT(Processes, contextSwitch, alpha):
     ioBursts = copy.deepcopy(Processes.IO_Burst)
     numBursts = copy.deepcopy(Processes.num_Burst)
     taus = [Processes.tau for x in range(procLeft)]
-    AllDone = False
-    Curr = "" #The current process the CPU is working on
     completed = [] #Which processes are done
     IO = [] #What is in the IO
     cSwitches = 0 #The number of times that context switching occurs
     buffer = contextSwitch
+    Working = False
 
     print("time 0ms: Simulator started for SRT ", end = "")
     printQueue(Q)
@@ -36,6 +35,7 @@ def SRT(Processes, contextSwitch, alpha):
                 Q.append(alphabet[arrTime.index(x)])
                 print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; added to ready queue ", end = "", sep = "")
                 printQueue(Q)
+                procLeft -=1
         if(buffer == 0):
             buffer = contextSwitch
             Working = True
@@ -45,3 +45,4 @@ def SRT(Processes, contextSwitch, alpha):
             continue
     
         time += 1
+    print("")

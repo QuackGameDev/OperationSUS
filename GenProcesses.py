@@ -61,13 +61,23 @@ class Processes:
         #seed declaration
         self.randSeed.srand(self.seed_no_)
         
-        """ A dictionary with key: Process name and value: array of CPU and IO burst arrays
-            layout:
-            key: Process name
-            value: [arrive time, tau, num burst, currentBurstIndex, [CPU Burst], [IO Burst]]
-                num burst: Number of CPU and IO Burst
-                currentBurstIndex: current burst that the Process is executing"""
         self.reorganizedData = {}
+        
+        # list of all arrival time of every processes
+        self.arrival_Time = []
+        
+        # list of all number of burst of every processes
+        self.num_Burst = []  # number of burst in a CPU
+        
+        # 2D List
+        
+        # a list of list of CPU burst 
+        self.CPU_Burst = [[] for x in range(self.num_process_)]
+        
+        # a list of list of IO burst 
+        self.IO_Burst = [[] for x in range(self.num_process_)]
+        
+        
         
     # A testing method for puting info into a dict
     def reorganizeData(self):
@@ -116,13 +126,6 @@ class Processes:
         A = > Z
         0 => 25 (index of the list)
         """
-        self.arrival_Time = []
-        self.num_Burst = []  # number of burst in a CPU
-        
-        # 2D List
-        self.CPU_Burst = [[] for x in range(self.num_process_)]
-        self.IO_Burst = [[] for x in range(self.num_process_)]
-        
         
         for i in range(self.num_process_):
             self.arrival_Time.append(floor(self.next_exp()))
@@ -162,6 +165,16 @@ class Processes:
             lastCPU_Burst = "--> CPU burst {CPUburst}ms".format(CPUburst = self.CPU_Burst[i][-1])
             print(lastCPU_Burst)
 
+def printQueue(Q): #Prints the queue I guess
+    x = 0
+    print("[Q: ", end = "")
+    if(len(Q) == 0):
+        print("Empty]")
+        return
+    while(x < len(Q)-1):
+        print(Q[x], end = " ")
+        x+=1
+    print(Q[len(Q)-1], end = "]\n")
         
         
 if __name__ == "__main__":

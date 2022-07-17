@@ -15,7 +15,6 @@ def RR(Processes, contextSwitchTime, timeSlice):
     processing = []
     completed = []
 
-    allCompleted = False # keep track of when all of the processes is completed or not
     procLeft = Processes.num_process_
     arrTime = Processes.arrival_Time
     cpuBursts = copy.deepcopy(Processes.CPU_Burst)
@@ -30,7 +29,9 @@ def RR(Processes, contextSwitchTime, timeSlice):
     currStart = 0 #Keeps track of when the current process has started
     preemptions = 0
     buffQueue = []
-    
+    toReady = []
+    readyBuff = 0
+
     #Beginning of Algorithm
     print("time 0ms: Simulator started for RR with time slice {ts}ms [Q: empty]".format(ts = timeSlice))
     time = 0
@@ -90,8 +91,9 @@ def RR(Processes, contextSwitchTime, timeSlice):
 
         if(buffer == 0): #After the context switch buffer, add things into the CPU
             buffer = contextSwitchTime/2
-            processing.append(Q[0])
-            Q.pop(0)
+            processing.append(buffQueue[0])
+            buffQueue.pop(0)
+            cSwitches +=1
             currStart = time
             oriTime = oriBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]
             if(oriTime == cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]):
@@ -107,11 +109,17 @@ def RR(Processes, contextSwitchTime, timeSlice):
                 ioOut.pop(IO.index(x))
                 IO.pop(IO.index(x))
                 printQueue(Q)
+                cSwitches +=1
 
 
         if(len(processing) == 0):
-            if(len(Q) > 0):
+            if(len(Q) > 0 ):
                 buffer -= 1
+                if(buffer == contextSwitchTime/4 and len(buffQueue) == 0):
+                    buffQueue.append(Q[0])
+                    Q.pop(0)
+            elif(len(buffQueue) == 1):
+                buffer-=1
         
         time += 1
     time += contextSwitchTime/2

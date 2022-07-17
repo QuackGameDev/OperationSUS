@@ -89,7 +89,7 @@ def SJF(Processes, contextSwitchTime):
     alpha = 0.5
     # The transfer between IO to ready queue, holds the time in which they re enter.
     IO_to_ready = []
-    
+    printcorrectly = False
     print("time 0ms: Simulator started for SJF [Q: empty]")
     timer  = 0
     while(not allProcessTerminate):
@@ -102,45 +102,8 @@ def SJF(Processes, contextSwitchTime):
                 ready_queue.sort(key=sortQueue)
                 print("time "+str(timer)+"ms: Process "+str(alphabet[i])+" (tau "+str(processesInfo.get(alphabet[i]).get("tau"))+"ms) arrived; added to ready queue "+print_ready_queue(ready_queue))
         # This activates only if IO queue has any processes inside.
-        if(len(IOqueue)>0):
-            i=0
-            # This checks all inside the IO queue if any have reached their destination. If it does
-            # , the process is removed from the IO queue and goes into standby IO_to_ready
-            while i < len(IOqueue):
-                if(processesInfo.get(IOqueue[i]).get("IOBurst")[processesInfo.get(IOqueue[i]).get("currentBurstIndex")]==0):
-                    IO_to_ready.append((IOqueue[i],timer+contextSwitch))
-                    IOqueue.remove(IOqueue[i])
-                    i-=1
-                i+=1
 
-                    
-        # This activates only if there are processes just waiting to head into ready queue from IO queue
-        if(len(IO_to_ready)>0):
-            i=0
-            while i <(len(IO_to_ready)):
-                if(IO_to_ready[i][1]==timer):
-                    ready_queue.append(IO_to_ready[i][0])
-                    ready_queue.sort(key=sortQueue)
-                    print("time "+str(timer)+"ms: Process "+IO_to_ready[i][0]+" (tau "+str(processesInfo.get(IO_to_ready[i][0]).get("tau"))+"ms) completed I/O; added to ready queue "+print_ready_queue(ready_queue))
-                    processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]+=1
-                    IO_to_ready.pop(i)
-                    i-=1
-                i+=1
-                    
-        #This makes sure that the CPU burst always only has one process inside and not being occupied by the context switch
-        if( CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
-            CPUqueue.append(ready_queue[0])
-            ready_queue.pop(0)
-            CPUburst = True
-            timer_for_switch=contextSwitch
-        # After getting the content switch done after moving in a new process, CPU Burst is set up and the CPU timer ticks from now on
-        if CPUburst == True and timer_for_switch==0:
-            print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
-            timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
-            actual_burst =timer_for_CPU_burst
-            #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst))
-            
-        # When the CPU Burst is done
+                # When the CPU Burst is done
         if CPUburst ==True and timer_for_CPU_burst==0:
             #print("CPU Burst complete: "+str(timer))
             if (len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)==0:
@@ -167,8 +130,58 @@ def SJF(Processes, contextSwitchTime):
                 timer_for_switch=contextSwitch
                 CPUburst = False
 
-        if(len(completed)==numProcess):
-            timer+=contextSwitch
+        if(len(IOqueue)>0):
+            i=0
+            # This checks all inside the IO queue if any have reached their destination. If it does
+            # , the process is removed from the IO queue and goes into standby IO_to_ready
+            while i < len(IOqueue):
+                if(processesInfo.get(IOqueue[i]).get("IOBurst")[processesInfo.get(IOqueue[i]).get("currentBurstIndex")]==0):
+                    IO_to_ready.append((IOqueue[i],timer+contextSwitch))
+                    IOqueue.remove(IOqueue[i])
+                    i-=1
+                i+=1
+
+        if CPUburst == True and timer_for_switch==0:
+            print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
+            timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
+            actual_burst =timer_for_CPU_burst
+            #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst))      
+
+
+        # This activates only if there are processes just waiting to head into ready queue from IO queue
+        if(len(IO_to_ready)>0):
+            i=0
+            IO_to_ready.sort()
+            while i <(len(IO_to_ready)):
+                if(IO_to_ready[i][1]==timer):
+                    ready_queue.append(IO_to_ready[i][0])
+                    ready_queue.sort(key=sortQueue)
+                    print("time "+str(timer)+"ms: Process "+IO_to_ready[i][0]+" (tau "+str(processesInfo.get(IO_to_ready[i][0]).get("tau"))+"ms) completed I/O; added to ready queue "+print_ready_queue(ready_queue))
+                    processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]+=1
+                    IO_to_ready.pop(i)
+                    if(CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
+                        printcorrectly = True
+                    i-=1
+                i+=1
+            if(printcorrectly == True):
+                ready_queue.sort(key=sortQueue)
+                CPUqueue.append(ready_queue[0])
+                CPUburst = True
+                timer_for_switch=contextSwitch
+                ready_queue.pop(0)
+                printcorrectly = False
+        #This makes sure that the CPU burst always only has one process inside and not being occupied by the context switch
+        if( CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
+            CPUqueue.append(ready_queue[0])
+            ready_queue.pop(0)
+            CPUburst = True
+            timer_for_switch=contextSwitch
+        # After getting the content switch done after moving in a new process, CPU Burst is set up and the CPU timer ticks from now on
+
+            
+
+        if(len(completed)==numProcess or timer_for_switch<-10000000000):
+            timer+=contextSwitch 
             print("time "+str(timer)+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
             allProcessTerminate=True
 

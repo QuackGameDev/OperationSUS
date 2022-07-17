@@ -83,8 +83,8 @@ def RR(Processes, contextSwitchTime, timeSlice):
                     else:
                         print("time ", time, "ms: Time slice expired; process ", processing[0], " preempted with ", int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]) , "ms remaining ",end = "", sep = "")
                         printQueue(Q)
-                        buffer = contextSwitchTime
-                        Q.append(processing[0])
+                        readyBuff = contextSwitchTime/2
+                        toReady.append(processing[0])
                         processing.pop()
                         preemptions += 1
                 
@@ -102,17 +102,20 @@ def RR(Processes, contextSwitchTime, timeSlice):
                 print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
             printQueue(Q)
         
-        for x in IO:
-            if(time == ioOut[IO.index(x)]):
-                Q.append(x)
-                print("time ", time, "ms: Process ", x, " completed I/O; added to ready queue ",end = "", sep = "")
-                ioOut.pop(IO.index(x))
-                IO.pop(IO.index(x))
+        x = 0
+        while(x < len(IO)):
+            if(time == ioOut[x]):
+                Q.append(IO[x])
+                print("time ", time, "ms: Process ", IO[x], " completed I/O; added to ready queue ",end = "", sep = "")
+                ioOut.pop(x)
+                IO.pop(x)
                 printQueue(Q)
                 cSwitches +=1
+                x-=1
+            x+=1
 
 
-        if(len(processing) == 0):
+        if(len(processing) == 0 and len(toReady) == 0):
             if(len(Q) > 0 ):
                 buffer -= 1
                 if(buffer == contextSwitchTime/4 and len(buffQueue) == 0):
@@ -121,6 +124,13 @@ def RR(Processes, contextSwitchTime, timeSlice):
             elif(len(buffQueue) == 1):
                 buffer-=1
         
+        
+        
+        if(len(toReady) == 1):
+            readyBuff -=1
+            if(readyBuff == 0):
+                Q.append(toReady[0])
+                toReady.pop(0)
         time += 1
     time += contextSwitchTime/2
     print("time ", int(time), "ms: Simulator ended for RR ", end = "", sep = "")

@@ -31,11 +31,13 @@ def RR(Processes, contextSwitchTime, timeSlice):
     preemptions = 0
     buffQueue = []
     
+    #Beginning of Algorithm
     print("time 0ms: Simulator started for RR with time slice {ts}ms [Q: empty]".format(ts = timeSlice))
     time = 0
 
     while(procLeft > 0):
-        for x in arrTime:
+
+        for x in arrTime: #Add the processes slowly by arrival times
             if(x == time):
                 Q.append(alphabet[arrTime.index(x)])
                 print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " arrived; added to ready queue ", end = "", sep = "")
@@ -115,3 +117,10 @@ def RR(Processes, contextSwitchTime, timeSlice):
     time += contextSwitchTime/2
     print("time ", int(time), "ms: Simulator ended for RR ", end = "", sep = "")
     printQueue(Q)
+
+
+if __name__ == "__main__":
+    test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
+    test_Process.generateProcesses()
+    test_Process.reorganizeData()
+    RR(test_Process, int(sys.argv[5]), int(sys.argv[7]))

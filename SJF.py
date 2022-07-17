@@ -59,7 +59,7 @@ def SJF(Processes, contextSwitchTime):
     processesInfo = Processes.reorganizedData
     
     def sortQueue(e):
-        return processesInfo.get(e).get("tau")
+        return processesInfo.get(e).get("tau"),ord(e)
 
     # list of processes in the ready queue
     ready_queue = []
@@ -96,26 +96,33 @@ def SJF(Processes, contextSwitchTime):
             # add all of the processes to the queue
             for i in processesNameList:
                 ready_queue.append(alphabet[i])
-                ready_queue.sort()
+                ready_queue.sort(key=sortQueue)
                 print("time "+str(timer)+"ms: Process "+str(alphabet[i])+" (tau "+str(processesInfo.get(alphabet[i]).get("tau"))+"ms) arrived; added to ready queue "+print_ready_queue(ready_queue))
                 # print(ready_queue)
                 # print(len(ready_queue))
         if(len(IOqueue)>0):
-            for i in IOqueue:
-                if(processesInfo.get(i).get("IOBurst")[processesInfo.get(i).get("currentBurstIndex")]==0):
-                    ready_queue.append(i)
-                    ready_queue.sort()
-                    timer+=2
-                    #print(IOqueue)
-                    print("time "+str(timer)+"ms: Process "+i+" (tau "+str(processesInfo.get(i).get("tau"))+"ms) completed I/O; added to ready queue "+print_ready_queue(ready_queue))
-                    processesInfo.get(i)["currentBurstIndex"]+=1
-                    IOqueue.remove(i)
-                    for f in IOqueue:
-                        processesInfo.get(f).get("IOBurst")[processesInfo.get(f).get("currentBurstIndex")]-=2
-                    timer_for_CPU_burst-=2
+            i=0
+            while i < len(IOqueue):
+                if(processesInfo.get(IOqueue[i]).get("IOBurst")[processesInfo.get(IOqueue[i]).get("currentBurstIndex")]==0):
+                    IO_to_ready.append((IOqueue[i],timer+2))
+                    IOqueue.remove(IOqueue[i])
+                    i-=1
+                i+=1
+
                     
 
-            
+        if(len(IO_to_ready)>0):
+            i=0
+            while i <(len(IO_to_ready)):
+                if(IO_to_ready[i][1]==timer):
+                    ready_queue.append(IO_to_ready[i][0])
+                    ready_queue.sort(key=sortQueue)
+                    print("time "+str(timer)+"ms: Process "+IO_to_ready[i][0]+" (tau "+str(processesInfo.get(IO_to_ready[i][0]).get("tau"))+"ms) completed I/O; added to ready queue "+print_ready_queue(ready_queue))
+                    processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]+=1
+                    IO_to_ready.pop(i)
+                    i-=1
+                i+=1
+                    
 
         if( CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
             CPUqueue.append(ready_queue[0])
@@ -135,6 +142,8 @@ def SJF(Processes, contextSwitchTime):
             if (len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)==0:
                 print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" terminated "+print_ready_queue(ready_queue))
                 completed.append(CPUqueue[0])
+                #print(completed)
+                #print(numProcess)
                 CPUqueue.pop(0)
                 timer_for_switch=contextSwitch
                 CPUburst = False
@@ -145,6 +154,7 @@ def SJF(Processes, contextSwitchTime):
                 else:
                     print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) completed a CPU burst; "+str(len(processesInfo.get(CPUqueue[0]).get("CPUBurst"))-processesInfo.get(CPUqueue[0]).get("currentBurstIndex")-1)+" bursts to go "+print_ready_queue(ready_queue))
                 IOqueue.append(CPUqueue[0])
+                #print(CPUqueue[0],timer)
                 old_tau = processesInfo.get(CPUqueue[0]).get("tau")
                 processesInfo.get(CPUqueue[0])["tau"]= math.ceil(alpha * actual_burst +(1-alpha) * old_tau)
                 print("time "+str(timer)+"ms: Recalculated tau for process "+str(CPUqueue[0])+": old tau "+str(old_tau)+"ms; new tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms "+print_ready_queue(ready_queue))
@@ -171,7 +181,7 @@ if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()
     test_Process.reorganizeData()
-    test_Process.printReorganizedData()
+   # test_Process.printReorganizedData()
     #test_Process.print()
     # for i in test_Process.reorganizedData:
     #         #print(test_Process.reorganizedData.get(i).get("arrivalTime"))

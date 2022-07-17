@@ -169,7 +169,7 @@ def printQueue(Q): #Prints the queue I guess
     x = 0
     print("[Q: ", end = "")
     if(len(Q) == 0):
-        print("Empty]")
+        print("empty]")
         return
     while(x < len(Q)-1):
         print(Q[x], end = " ")

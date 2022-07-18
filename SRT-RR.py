@@ -136,7 +136,7 @@ def SJF(Processes, contextSwitchTime):
                 if(preempt_print==True):
                     CPUqueue.append(preempting[0][0])
                     timer_for_switch=contextSwitch
-                    ready_queue.pop(0)
+                    
                 else:
                     timer_for_switch=contextSwitch
                     CPUburst = False

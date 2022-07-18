@@ -22,9 +22,11 @@ def SRT(Processes, contextSwitch, alpha):
     numBursts = copy.deepcopy(Processes.num_Burst)
     taus = [Processes.tau for x in range(procLeft)]
     CPU_burst=True
-    CPU_queue = []
+    CPU = []
     completed = [] #Which processes are done
     IO = [] #What is in the IO
+    IO_R = []
+    P = [] # Preempting
     cSwitches = 0 #The number of times that context switching occurs
     buffer = contextSwitch
     Working = False
@@ -46,27 +48,35 @@ def SRT(Processes, contextSwitch, alpha):
         #Checking if there is nothing in the CPU Burst Queue and putting something if there is something
         if(CPU_burst==False):
             buffer = contextSwitch
-            CPU_queue.append(Q[0])
+            CPU.append(Q[0])
             CPU_burst = True
 
-        #After the context switch has finished and CPU Burst has been activateed
-        if(CPU_burst == True and buffer == 0):
-            print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; added to ready queue ", end = "", sep = "")
-            CPU_burst_timer = 
+        
 
         # Must make a preempting branch just in case in order to print those that are remaining if any processes have been preempted
+        if ( CPU_burst == True and buffer ==0 and len(P)>0):
+            if(CPU[0] == P[0][0]):
 
+            else:
+                
+
+        #After the context switch has finished and CPU Burst has been activateed
+        elif(CPU_burst == True and buffer == 0 and len(P)==0):
+            print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; added to ready queue ", end = "", sep = "")
+            CPU_burst_timer = 
        
 
         #Check if CPU Burst timer has reached 0 and starts moving it into the IO Queue, must make branches for either if the last CPU Burst or second to last CPU Burst for the Process
-        if()
+        if(CPU_burst_timer == 0 and CPU_burst == True):
 
         #Checking if any IO Bursts are done and then start moving them into standby procedure for moving them back into the ready queue
+        if(len(IO)>0):
 
         #Moving those that are in standby from IO queue to ready queue.
-
-         #Preempting check if Tau -CPU Burst time that's already been used is bigger than the tau that's just been freed from the IO Queue
-        if()
+        if(len(IO_R)>0):
+            for i in IO:
+                #Preempting check if Tau -CPU Burst time that's already been used is bigger than the tau that's just been freed from the IO Queue
+                if()
 
 
         CPU_burst_timer-=1

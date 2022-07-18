@@ -165,7 +165,7 @@ class Processes:
             lastCPU_Burst = "--> CPU burst {CPUburst}ms".format(CPUburst = self.CPU_Burst[i][-1])
             print(lastCPU_Burst)
 
-def printQueue(Q): #Prints the queue I guess
+def printQueue(Q): #Prints the queue
     x = 0
     print("[Q: ", end = "")
     if(len(Q) == 0):
@@ -175,8 +175,8 @@ def printQueue(Q): #Prints the queue I guess
         print(Q[x], end = " ")
         x+=1
     print(Q[len(Q)-1], end = "]\n")
-        
-        
+    
+       
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()

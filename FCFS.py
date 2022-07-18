@@ -18,6 +18,21 @@ def allIndexOfTargerNum(targetNum, list):
             
     return allIndex
 
+def outputStats(algoName, avgCPUBurst, avgWaitTime, avgTurnaround, numContextSwitch, numPreemptions, CPUUtil):
+    # open a (new) file to write
+    outFile = open("simout.txt", "w")
+    outFile.write("Algorithm {nameAlgo}\n".format(nameAlgo = algoName))
+    outFile.write("-- average CPU burst time: {avgCPUtime} ms\n".format(avgCPUtime = ceil(avgCPUBurst * 1000)/1000))
+    outFile.write("-- average wait time: {avgWait} ms\n".format(avgWait = ceil(avgWaitTime * 1000)/1000))
+    outFile.write("-- vaerage turnaround time: {avgTurn} ms\n".format(avgTurn = ceil(avgTurnaround * 1000)/1000))
+    outFile.write("-- total number of context switches: {numSwitch}\n".format(numSwitch = numContextSwitch))
+    outFile.write("-- total number of preemptions: {premept}\n".format(premept = numPreemptions))
+    
+    
+    # CPU utilization calculation
+    outFile.write("-- CPU utilization: {CPUultil}%\n".format(CPUultil = CPUUtil))
+    outFile.close()
+
 def calcTotalCPUTime(Processes):
     CPUBurstList = Processes.CPU_Burst
     totalCPUBurstTime = 0

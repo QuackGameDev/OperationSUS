@@ -38,6 +38,21 @@ def calcTotalCPUTime(Processes):
     
     return totalCPUBurstTime
 
+def outputStats(algoName, avgCPUBurst, avgWaitTime, avgTurnaround, numContextSwitch, numPreemptions, CPUUtil):
+    # open a (new) file to write
+    outFile = open("simout.txt", "a")
+    outFile.write("Algorithm {nameAlgo}\n".format(nameAlgo = algoName))
+    outFile.write("-- average CPU burst time: {avgCPUtime} ms\n".format(avgCPUtime = ceil(avgCPUBurst * 1000)/1000))
+    outFile.write("-- average wait time: {avgWait} ms\n".format(avgWait = ceil(avgWaitTime * 1000)/1000))
+    outFile.write("-- vaerage turnaround time: {avgTurn} ms\n".format(avgTurn = ceil(avgTurnaround * 1000)/1000))
+    outFile.write("-- total number of context switches: {numSwitch}\n".format(numSwitch = numContextSwitch))
+    outFile.write("-- total number of preemptions: {premept}\n".format(premept = numPreemptions))
+    
+    
+    # CPU utilization calculation
+    outFile.write("-- CPU utilization: {CPUultil}%\n".format(CPUultil = CPUUtil))
+    outFile.close()
+
 def print_ready_queue(ready_queue):
     if(len(ready_queue)==0):
         info="[Q: empty]"

@@ -128,9 +128,9 @@ def SJF(Processes, contextSwitchTime, Alpha):
                 IOqueue.append(CPUqueue[0])
                 #print(CPUqueue[0],timer)
                 old_tau = processesInfo.get(CPUqueue[0]).get("tau")
-                processesInfo.get(CPUqueue[0])["tau"]= math.ceil(alpha * actual_burst +(1-alpha) * old_tau)
+                processesInfo.get(CPUqueue[0])["tau"]= int(math.ceil(alpha * actual_burst +(1-alpha) * old_tau))
                 print("time "+str(timer)+"ms: Recalculated tau for process "+str(CPUqueue[0])+": old tau "+str(old_tau)+"ms; new tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms "+print_ready_queue(ready_queue))
-                print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" switching out of CPU; will block on I/O until time "+str(timer+processesInfo.get(CPUqueue[0]).get("IOBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]+contextSwitch)+"ms "+print_ready_queue(ready_queue))
+                print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" switching out of CPU; will block on I/O until time "+str(int(timer+processesInfo.get(CPUqueue[0]).get("IOBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]+contextSwitch))+"ms "+print_ready_queue(ready_queue))
                 CPUqueue.pop(0)
                 timer_for_switch=contextSwitch
                 CPUburst = False
@@ -187,7 +187,7 @@ def SJF(Processes, contextSwitchTime, Alpha):
 
         if(len(completed)==numProcess or timer_for_switch<-10000000000):
             timer+=contextSwitch 
-            print("time "+str(timer)+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
+            print("time "+str(int(timer))+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
             allProcessTerminate=True
 
         if len(IOqueue)>0:
@@ -214,5 +214,5 @@ if __name__ == "__main__":
     #         for j in test_Process.reorganizedData.get(i):
     #             info += "Key: {keyInner}; Value: {valInner}\n\t".format(keyInner = j, valInner = test_Process.reorganizedData.get(i).get(j))
     #         print(info)
-    SJF(test_Process,4)
+    SJF(test_Process,int(sys.argv[5]),float(sys.argv[6]))
     

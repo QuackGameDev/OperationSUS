@@ -51,7 +51,7 @@ def SRT(Processes, contextSwitch, alpha):
                 print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; ", end = "", sep = "")
                 
                 if(len(CPU) > 0):
-                    if(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] > cpuBursts[arrTime.index(x)[0]]):
+                    if(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] > cpuBursts[arrTime.index(x)][0]):
                         print("preempting ", CPU[0], end = "", sep = "")
                         readyBuff = contextSwitch/2
                         toReady.append(CPU[0])

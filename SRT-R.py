@@ -145,7 +145,7 @@ def SJF(Processes, contextSwitchTime):
                 i+=1
 
         if CPUburst == True and timer_for_switch==0 and len(preempting)>0:
-            print("time "+str(timer)+"ms: Process "+str(preempting[0][0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for remaining "+str(preempting[0][1])+"ms of"+str(preempting[0][2])+" burst "+print_ready_queue(ready_queue))
+            print("time "+str(timer)+"ms: Process "+str(preempting[0][0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for remaining "+str(preempting[0][1])+"ms of "+str(preempting[0][2])+" burst "+print_ready_queue(ready_queue))
             timer_for_CPU_burst = preempting[0][1]
             actual_burst =preempting[0][2]
             preempting.pop(0)
@@ -166,7 +166,7 @@ def SJF(Processes, contextSwitchTime):
                 if(IO_to_ready[i][1]==timer):
                     processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]+=1
                     # Prempting
-                    if( processesInfo.get(IO_to_ready[i][0]).get("CPUBurst")[processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]] < timer_for_CPU_burst ):
+                    if( processesInfo.get(IO_to_ready[i][0])["tau"] < processesInfo.get(CPUqueue[0])["tau"] and timer_for_CPU_burst > processesInfo.get(IO_to_ready[i][0]).get("CPUBurst")[processesInfo.get(CPUqueue[0])["currentBurstIndex"]] ):
                         ready_queue.append(IO_to_ready[i][0])
                         ready_queue.sort(key=sortQueue)
                         print("time "+str(timer)+"ms: Process "+IO_to_ready[i][0]+" (tau "+str(processesInfo.get(IO_to_ready[i][0]).get("tau"))+"ms) completed I/O; preempting "+CPUqueue[0]+" "+print_ready_queue(ready_queue))
@@ -196,7 +196,7 @@ def SJF(Processes, contextSwitchTime):
 
         if( CPUburst == False and len(preempting)>0 and timer_for_switch<=0 and preempt == True):
             CPUqueue.append(preempting[0][0])
-            ready_queue.pop(0)
+         
             CPUburst = True
             timer_for_switch=contextSwitch
 
@@ -228,17 +228,5 @@ if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()
     test_Process.reorganizeData()
-   # test_Process.printReorganizedData()
-    #test_Process.print()
-    # for i in test_Process.reorganizedData:
-    #         #print(test_Process.reorganizedData.get(i).get("arrivalTime"))
-    #         test_Process.reorganizedData.get(i)["arrivalTime"]=4
-    #         print(test_Process.reorganizedData.get(i).get("CPUBurst")[test_Process.reorganizedData.get(i).get("currentBurstIndex")])
-    #         print(test_Process.reorganizedData.get(i).get("IOBurst")[test_Process.reorganizedData.get(i).get("currentBurstIndex")])
-    #         info = "Key: {key}\n".format(key = i) 
-    #         info += "Value: \n\t"
-    #         for j in test_Process.reorganizedData.get(i):
-    #             info += "Key: {keyInner}; Value: {valInner}\n\t".format(keyInner = j, valInner = test_Process.reorganizedData.get(i).get(j))
-    #         print(info)
     SJF(test_Process,4)
     

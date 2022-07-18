@@ -86,32 +86,6 @@ def FCFS(Processes, contextSwitchTime):
                 numProcessLeft -= 1 # subtract all of the processes that has already arrive so we don't add in more duplicate processes.
         
         
-        # Since we only need to do one CPU Burst at a time, all I need is one counter of CPU Burst time, 
-        # and have 2 separate IO Queue, one is to keep track of the end time and the other one is to keep track of the process name
-        
-        # if ready queue is loaded up, start 
-        if(CPUBurst == False and len(ready_queue) > 0 and timerToSwitch <= 0):
-            CPUqueue.append(ready_queue[0])
-            CPUBurst = True
-            timerToSwitch = contextSwitch
-        
-        # Time to start CPU Burst
-        if (CPUBurst == True and timerToSwitch == 0):
-            CPUBurstTimer = processesInfo.get(ready_queue[0]).get("CPUBurst")[processesInfo.get(ready_queue[0]).get("currentBurstIndex")]
-            CPUqueue.append(ready_queue[0])
-            info = "time {time}ms: Process {processName} started using the CPU for {CPUBurst}ms burst [Q:".format(time = timer, 
-                                                                                                                  processName = CPUqueue[0], 
-                                                                                                                  CPUBurst = int(CPUBurstTimer))
-            ready_queue.pop(0)
-            if(len(ready_queue) == 0):
-                info += " empty]"
-                print(info)
-            else:
-                for j in ready_queue:
-                    info += " {name}".format(name = j)
-                info += "]"
-                print(info)
-        
         # finish CPU Burst, time for IO Burst
         if (CPUBurst == True and CPUBurstTimer == 0):
             if (len(processesInfo.get(CPUqueue[0]).get("CPUBurst")) - processesInfo.get(CPUqueue[0]).get("currentBurstIndex") - 1) == 0:
@@ -174,22 +148,40 @@ def FCFS(Processes, contextSwitchTime):
                 CPUqueue.pop(0)
                 timerToSwitch = contextSwitch
                 CPUBurst = False
-
-
-
+        
         # IO Burst finished, add CPU back to the ready queue
         # This activates only if IO queue has any processes inside.
         if(len(IOQueue) > 0):
-            for i in range(len(IOQueue)):
+            i=0
+            while i < len(IOQueue):
                 if(IOQueue[i][0] == timer):
                     IO_to_ready.append(IOQueue[i])
                     IOQueue.remove(IOQueue[i])
-                    i-=1
-
-                    
+                    i -= 1
+                i += 1
+        
+        
+        # Time to start CPU Burst
+        if (CPUBurst == True and timerToSwitch == 0):
+            CPUBurstTimer = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
+            info = "time {time}ms: Process {processName} started using the CPU for {CPUBurst}ms burst [Q:".format(time = timer, 
+                                                                                                                  processName = CPUqueue[0], 
+                                                                                                                  CPUBurst = int(CPUBurstTimer))
+            if(len(ready_queue) == 0):
+                info += " empty]"
+                print(info)
+            else:
+                for j in ready_queue:
+                    info += " {name}".format(name = j)
+                info += "]"
+                print(info)
+        
+        
+        
         # This activates only if there are processes just waiting to head into ready queue from IO queue
         if(len(IO_to_ready) > 0):
-            for i in range(len(IO_to_ready)):
+            i=0
+            while i < (len(IO_to_ready)):
                 if(IO_to_ready[i][0] == timer):
                     ready_queue.append(IO_to_ready[i][1])
                     info = "time {time}ms: Process {processName} completed I/O; added to ready queue [Q:".format(time = timer, 
@@ -205,7 +197,16 @@ def FCFS(Processes, contextSwitchTime):
                     
                     processesInfo.get(IO_to_ready[i][1])["currentBurstIndex"] += 1
                     IO_to_ready.pop(i)
-                    i-=1
+                    i -= 1
+                i += 1
+        
+        # if ready queue is loaded up, start 
+        if(CPUBurst == False and len(ready_queue) > 0 and timerToSwitch <= 0):
+            CPUqueue.append(ready_queue[0])
+            ready_queue.pop(0)
+            CPUBurst = True
+            timerToSwitch = contextSwitch
+        
         
         
         if(len(completed) == tempProcesses.num_process_):

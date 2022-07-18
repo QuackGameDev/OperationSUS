@@ -10,17 +10,30 @@ from FCFS import *
 from SJF import *
 from SRT import *
 from RR import *
+import sys
         
         
 if __name__ == "__main__":
+    #Error handling
+    try:
+        a = int(sys.argv[1])
+        b = int(sys.argv[2])
+        c = float(sys.argv[3])
+        d = int(sys.argv[4])
+        e = int(sys.argv[5])
+        f = float(sys.argv[6])
+        g = int(sys.argv[7])
+    except ValueError:
+        sys.stderr.write('Error: Invalid Argument!\n')
+        sys.exit(2)
+        
     # For printing the info of all processes
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()
-    test_Process.print()
     contextSwitch = int(sys.argv[5])
     alpha = float(sys.argv[6])
     timeSlice = int(sys.argv[7])
-    #FCFS(test_Process, contextSwitch)
+    FCFS(test_Process, contextSwitch)
     #SJF() Add the parameters, I dunno what they are
     SRT(test_Process, contextSwitch, alpha)
     RR(test_Process, contextSwitch, timeSlice)

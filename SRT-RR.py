@@ -148,26 +148,27 @@ def SJF(Processes, contextSwitchTime):
                     i-=1
                 i+=1
 
-        
+        if CPUburst == True and timer_for_switch==0 and preempt_store==False and preempt_print==True and len(preempting)>0:
+            print("time "+str(timer)+"ms: Process "+str(preempting[0][0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for remaining "+str(preempting[0][1])+"ms of "+str(preempting[0][2])+"ms burst "+print_ready_queue(ready_queue))
+            timer_for_CPU_burst = preempting[0][1]
+            actual_burst =preempting[0][2]
+            preempt_print = False
+            preempt_store = False
 
-        if CPUburst == True and timer_for_switch==0 and preempt_store==True and preempt_print==False and len(preempting)>0:
+        elif CPUburst == True and timer_for_switch==0 and preempt_store==True and preempt_print==False and len(preempting)>0:
             print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
             timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
             actual_burst =timer_for_CPU_burst
             preempt_print = True
             preempt_store = False
             #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst)
-        if CPUburst == True and timer_for_switch==0 and preempt_store==False and preempt_print==False :
+        elif CPUburst == True and timer_for_switch==0 and preempt_store==False and preempt_print==False :
             print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
             timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
             actual_burst =timer_for_CPU_burst
             #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst))      
-        if CPUburst == True and timer_for_switch==0 and preempt_store==False and preempt_print==True and len(preempting)>0:
-            print("time "+str(timer)+"ms: Process "+str(preempting[0][0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for remaining "+str(preempting[0][1])+"ms of "+str(preempting[0][2])+"ms burst "+print_ready_queue(ready_queue))
-            timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
-            actual_burst =timer_for_CPU_burst
-            preempt_print = False
-            preempt_store = False
+        
+
             #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst)) 
 
 

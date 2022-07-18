@@ -86,7 +86,7 @@ def SJF(Processes, contextSwitchTime):
     old_tau =0
 
     # Alpha that is given by the user
-    alpha = 0.5
+    alpha = 0.75
     # The transfer between IO to ready queue, holds the time in which they re enter.
     IO_to_ready = []
     printcorrectly = False

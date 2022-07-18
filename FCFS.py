@@ -18,8 +18,38 @@ def allIndexOfTargerNum(targetNum, list):
             
     return allIndex
 
-# parameter: pass in a Processes class
+def calcTotalCPUTime(Processes):
+    CPUBurstList = Processes.CPU_Burst
+    totalCPUBurstTime = 0
+    # for every processes in the CPU
+    for i in CPUBurstList:
+        # for every CPU Burst in the list
+        for j in i:
+            totalCPUBurstTime += j
+    
+    return totalCPUBurstTime
 
+
+def calAvgCPUBurstTime(Processes):
+    CPUBurstList = Processes.CPU_Burst
+    numBurstList = Processes.num_Burst
+    totalCPUBurstTime = 0
+    totalNumBurst = 0
+    result = 0
+    # for every processes in the CPU
+    for i in CPUBurstList:
+        # for every CPU Burst in the list
+        for j in i:
+            totalCPUBurstTime += j
+            
+    for i in numBurstList:
+        totalNumBurst += i
+    
+    result = ceil((totalCPUBurstTime/totalNumBurst) * 1000)/1000
+    return result
+
+
+# parameter: pass in a Processes class
 def FCFS(Processes, contextSwitchTime):
     """Deep copy the Processes so I can fuck around with without changing the original version"""
     tempProcesses = copy.copy(Processes)
@@ -65,6 +95,28 @@ def FCFS(Processes, contextSwitchTime):
     # keep in charge of when CPU Burst Time ran out
     CPUBurstTimer = -1
     
+    
+    """Stats variable"""
+    avgCPUBurstTime = calAvgCPUBurstTime(tempProcesses)
+    
+    
+    # list of the total wait time to calculate average wait time
+    totalWaitTime = []
+    
+    # list of the total turnaround time to calculate average turnaround time
+    totalTurnaroundTime = []
+    
+    # Keep track of number of context switches
+    numContextSwitch = 0
+    
+    # keep track of number of preemptions
+    preemptionNum = 0
+    
+    
+    
+    
+    """Start of the algorithm"""
+    
     print("time 0ms: Simulator started for FCFS [Q: empty]")
     timer = 0
     
@@ -80,7 +132,8 @@ def FCFS(Processes, contextSwitchTime):
                 for j in ready_queue:
                     info += " {name}".format(name = j)
                 info += "]"
-                print(info)
+                if(timer <= 1000):
+                    print(info)
                 # if CPUqueue is empty, then you start context switch timer
                 # so you can start doing CPU Burst, or else there is still CPU Burst ahead
                 numProcessLeft -= 1 # subtract all of the processes that has already arrive so we don't add in more duplicate processes.
@@ -118,13 +171,15 @@ def FCFS(Processes, contextSwitchTime):
                                                                                                                          burstLeft = numBurstLeft)
                 if(len(ready_queue) == 0):
                     info += " empty]"
-                    print(info)
+                    if(timer <= 1000):
+                        print(info)
                     info = ""
                 else:
                     for j in ready_queue:
                         info += " {name}".format(name = j)
                     info += "]"
-                    print(info)
+                    if(timer <= 1000):
+                        print(info)
                     info = ""
 
                 # reduce and update num Burst by one
@@ -143,7 +198,8 @@ def FCFS(Processes, contextSwitchTime):
                         info += " {name}".format(name = j)
                     info += "]"
                 
-                print(info)
+                if(timer <= 1000):
+                    print(info)
                 IOQueue.append([IOBurstEndTime, CPUqueue[0]])
                 CPUqueue.pop(0)
                 timerToSwitch = contextSwitch
@@ -169,12 +225,15 @@ def FCFS(Processes, contextSwitchTime):
                                                                                                                   CPUBurst = int(CPUBurstTimer))
             if(len(ready_queue) == 0):
                 info += " empty]"
-                print(info)
+                if(timer <= 1000):
+                    print(info)
             else:
                 for j in ready_queue:
                     info += " {name}".format(name = j)
                 info += "]"
-                print(info)
+                if(timer <= 1000):
+                    print(info)
+            numContextSwitch += 1
         
         
         
@@ -188,12 +247,14 @@ def FCFS(Processes, contextSwitchTime):
                                                                                                         processName = IO_to_ready[i][1])
                     if(len(ready_queue) == 0):
                         info += " empty]"
-                        print(info)
+                        if(timer <= 1000):
+                            print(info)
                     else:
                         for j in ready_queue:
                             info += " {name}".format(name = j)
                         info += "]"
-                        print(info)
+                        if(timer <= 1000):
+                            print(info)
                     
                     processesInfo.get(IO_to_ready[i][1])["currentBurstIndex"] += 1
                     IO_to_ready.pop(i)
@@ -213,7 +274,8 @@ def FCFS(Processes, contextSwitchTime):
             allProcessTerminate = True
             info = "time {time}ms: Simulator ended for FCFS [Q: empty]".format(time = timer + 2)
             print(info, end = "")
-        
+            CPUUtilNum = ceil(((calcTotalCPUTime(tempProcesses) / timer) * 100) * 1000)/1000
+            outputStats("FCFS", avgCPUBurstTime, 0, 0, numContextSwitch, 0, CPUUtilNum)
         CPUBurstTimer -= 1
         timerToSwitch -= 1
         timer += 1

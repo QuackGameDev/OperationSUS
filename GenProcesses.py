@@ -165,7 +165,7 @@ class Processes:
             lastCPU_Burst = "--> CPU burst {CPUburst}ms".format(CPUburst = self.CPU_Burst[i][-1])
             print(lastCPU_Burst)
 
-def printQueue(Q): #Prints the queue I guess
+def printQueue(Q): #Prints the queue
     x = 0
     print("[Q: ", end = "")
     if(len(Q) == 0):
@@ -176,7 +176,22 @@ def printQueue(Q): #Prints the queue I guess
         x+=1
     print(Q[len(Q)-1], end = "]\n")
         
-        
+def outputStats(algoName, avgCPUBurst, avgWaitTime, avgTurnaround, numContextSwitch, numPreemptions, CPUUtil):
+    # open a (new) file to write
+    outFile = open("simout.txt", "w")
+    outFile.write("Algorithm {nameAlgo}\n".format(nameAlgo = algoName))
+    outFile.write("-- average CPU burst time: {avgCPUtime} ms\n".format(avgCPUtime = ceil(avgCPUBurst * 1000)/1000))
+    outFile.write("-- average wait time: {avgWait} ms\n".format(avgWait = ceil(avgWaitTime * 1000)/1000))
+    outFile.write("-- average turnaround time: {avgTurn} ms\n".format(avgTurn = ceil(avgTurnaround * 1000)/1000))
+    outFile.write("-- total number of context switches: {numSwitch}\n".format(numSwitch = numContextSwitch))
+    outFile.write("-- total number of preemptions: {premept}\n".format(premept = numPreemptions))
+    
+    
+    # CPU utilization calculation
+    outFile.write("-- CPU utilization: {CPUultil}%\n".format(CPUultil = CPUUtil))
+    outFile.close()
+    
+       
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()

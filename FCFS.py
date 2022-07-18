@@ -275,7 +275,7 @@ def FCFS(Processes, contextSwitchTime):
             info = "time {time}ms: Simulator ended for FCFS [Q: empty]".format(time = timer + 2)
             print(info, end = "")
             CPUUtilNum = ceil(((calcTotalCPUTime(tempProcesses) / timer) * 100) * 1000)/1000
-            outputStats("FCFS", avgCPUBurstTime, 0, 0, numContextSwitch, 0, CPUUtilNum)
+            outputStats("FCFS", avgCPUBurstTime, 0, 0, numContextSwitch, preemptionNum, CPUUtilNum)
         CPUBurstTimer -= 1
         timerToSwitch -= 1
         timer += 1

@@ -34,6 +34,6 @@ if __name__ == "__main__":
     alpha = float(sys.argv[6])
     timeSlice = int(sys.argv[7])
     FCFS(test_Process, contextSwitch)
-    SJF(test_Process, contextSwitch)
+    SJF(test_Process, contextSwitch, alpha)
     SRT(test_Process, contextSwitch, alpha)
     RR(test_Process, contextSwitch, timeSlice)

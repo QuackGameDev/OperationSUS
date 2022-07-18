@@ -18,6 +18,7 @@ F
 """
 from GenProcesses import *
 import math
+import copy
 def allIndexOfTargerNum(targetNum, list):
     allIndex = []
     for i in range(len(list)):
@@ -44,19 +45,23 @@ def print_ready_queue(ready_queue):
 
 
 
-def SJF(Processes, contextSwitchTime):
+def SJF(Processes, contextSwitchTime, Alpha):
+    """Deep copy the Processes so I can fuck around with without changing the original version"""
+    tempProcesses = copy.copy(Processes)
+    
+    
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     # tell whenever the algo is done so the timer stop
     allProcessTerminate = False
     
     # In charge of how many processes
-    numProcess = Processes.num_process_ 
+    numProcess = tempProcesses.num_process_ 
 
     # a LIST that keep track of the time that the next process arrive. Pop arrival_Time[0] out once timer = arrival_Time[0]
-    arrivalTimer = Processes.arrival_Time
+    arrivalTimer = tempProcesses.arrival_Time
     
     # a dict of all of the info of all processes
-    processesInfo = Processes.reorganizedData
+    processesInfo = tempProcesses.reorganizedData
     # This sorts the Queue by tau and if that fails, by alphabet
     def sortQueue(e):
         return processesInfo.get(e).get("tau"),ord(e)
@@ -75,7 +80,7 @@ def SJF(Processes, contextSwitchTime):
 
     CPUburst = False
 
-    contextSwitch =2
+    contextSwitch = contextSwitchTime / 2
 
     timer_for_switch=-1
 
@@ -86,7 +91,7 @@ def SJF(Processes, contextSwitchTime):
     old_tau =0
 
     # Alpha that is given by the user
-    alpha = 0.5
+    alpha = Alpha
     # The transfer between IO to ready queue, holds the time in which they re enter.
     IO_to_ready = []
     printcorrectly = False

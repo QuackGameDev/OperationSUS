@@ -55,10 +55,12 @@ def SRT(Processes, contextSwitch, alpha):
 
         # Must make a preempting branch just in case in order to print those that are remaining if any processes have been preempted
         if ( CPU_burst == True and buffer ==0 and len(P)>0):
-            if(CPU[0] == P[0][0]):
-
-            else:
+            if(Q[0] == P[0][0]):
+                CPU_burst_timer = P[0][1]
                 
+            else:
+                CPU_burst_timer = 
+
 
         #After the context switch has finished and CPU Burst has been activateed
         elif(CPU_burst == True and buffer == 0 and len(P)==0):

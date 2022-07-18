@@ -8,6 +8,8 @@ Created on Sun Jul 10 21:59:20 2022
 from GenProcesses import *
 import copy
 
+
+
 # parameter: pass in a Processes class
 def RR(Processes, contextSwitchTime, timeSlice):
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -31,6 +33,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
     buffQueue = []
     toReady = []
     readyBuff = 0
+    ioBuff = 0
 
     #Beginning of Algorithm
     print("time 0ms: Simulator started for RR with time slice {ts}ms [Q: empty]".format(ts = timeSlice))
@@ -44,7 +47,8 @@ def RR(Processes, contextSwitchTime, timeSlice):
                 print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " arrived; added to ready queue ", end = "", sep = "")
                 printQueue(Q)
 
-
+        if(ioBuff > 0):
+            ioBuff-=1
 
         if(len(processing) == 1):
             cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]] -= 1
@@ -67,12 +71,18 @@ def RR(Processes, contextSwitchTime, timeSlice):
                     else:
                         print("time ", time, "ms: Process ", processing[0], " completed a CPU burst; 1 burst to go ", end = "", sep = "")
                     printQueue(Q)
-                    print("time ", time, "ms: Process ", processing[0], " switching out of CPU; will block on I/O until time ", int(time + int(ioBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])] - 1]) + contextSwitchTime/2),"ms " , end = "", sep = "")
+                    
+                    #This following line does the math and prints the time it will come out of I/O. It is unnecessarily long
+                    print("time ", time, "ms: Process ", processing[0], " switching out of CPU; will block on I/O until time ", 
+                    int(time + int(ioBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])] - 1]) + contextSwitchTime/2),"ms " , end = "", sep = "")
+                    
                     ioOut.append(int(time + int(ioBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])] - 1]) + contextSwitchTime/2))
                     printQueue(Q)
                     IO.append(processing[0])
+                    ioBuff = contextSwitchTime/2
+                    cSwitches+=1 
                     if(len(Q) > 0):
-                        buffer = contextSwitchTime
+                        buffer = contextSwitchTime/2 
                     processing.pop()
 
             if(len(processing) == 1):
@@ -97,25 +107,35 @@ def RR(Processes, contextSwitchTime, timeSlice):
             currStart = time
             oriTime = oriBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]
             if(oriTime == cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]):
-                print("time ", time, "ms: Process ", processing[0], " started using the CPU for ", int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms burst ", end = "", sep = "")
+                print("time ", time, "ms: Process ", processing[0], " started using the CPU for ",
+                int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms burst ", end = "", sep = "")
             else:
-                print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+                print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", 
+                int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
             printQueue(Q)
         
         x = 0
+        ioDone = []
         while(x < len(IO)):
             if(time == ioOut[x]):
-                Q.append(IO[x])
-                print("time ", time, "ms: Process ", IO[x], " completed I/O; added to ready queue ",end = "", sep = "")
+                ioDone.append(IO[x])
                 ioOut.pop(x)
                 IO.pop(x)
-                printQueue(Q)
-                cSwitches +=1
                 x-=1
             x+=1
+        
+        if(len(ioDone) > 0):
+            ioDone.sort()
+            for x in ioDone:
+                Q.append(x)
+                print("time ", time, "ms: Process ", x , " completed I/O; added to ready queue ",end = "", sep = "")
+                printQueue(Q)
+                cSwitches +=1
+            ioDone.clear()
 
+        
 
-        if(len(processing) == 0 and len(toReady) == 0):
+        if(len(processing) == 0 and len(toReady) == 0 and ioBuff == 0):
             if(len(Q) > 0 ):
                 buffer -= 1
                 if(buffer == contextSwitchTime/4 and len(buffQueue) == 0):

@@ -1,7 +1,7 @@
 """
 Created on Thu Jul 14 19:54:41 2022
 
-@author: Raphael Chung
+@author: Raphael Chung, Roger Luo
 notes:
 - The ready Queue must be sorted by CPU Burst time
 - Whenever a Process Completes a CPU Burst, Tau must be recalculated
@@ -83,6 +83,8 @@ def SJF(Processes, contextSwitchTime):
 
     actual_burst=-1
 
+    ioBuff = 0
+
     preempting=[]
     preempt_store = False
     preempt_print = False
@@ -106,7 +108,8 @@ def SJF(Processes, contextSwitchTime):
                 ready_queue.sort(key=sortQueue)
                 print("time "+str(timer)+"ms: Process "+str(alphabet[i])+" (tau "+str(processesInfo.get(alphabet[i]).get("tau"))+"ms) arrived; added to ready queue "+print_ready_queue(ready_queue))
         # This activates only if IO queue has any processes inside.
-
+        if(ioBuff > 0):
+            ioBuff-=1
                 # When the CPU Burst is done
         if CPUburst ==True and timer_for_CPU_burst==0:
             #print("CPU Burst complete: "+str(timer))
@@ -129,6 +132,7 @@ def SJF(Processes, contextSwitchTime):
                 print("time "+str(timer)+"ms: Recalculated tau for process "+str(CPUqueue[0])+": old tau "+str(old_tau)+"ms; new tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms "+print_ready_queue(ready_queue))
                 print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" switching out of CPU; will block on I/O until time "+str(timer+processesInfo.get(CPUqueue[0]).get("IOBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]+contextSwitch)+"ms "+print_ready_queue(ready_queue))
                 CPUqueue.pop(0)
+                ioBuff = contextSwitchTime/2
                 if(preempt_print==True):
                     CPUqueue.append(preempting[0][0])
                     timer_for_switch=contextSwitch
@@ -231,8 +235,9 @@ def SJF(Processes, contextSwitchTime):
             for i in IOqueue:
                 processesInfo.get(i).get("IOBurst")[processesInfo.get(i).get("currentBurstIndex")]-=1
         #print("CPU Burst timer:"+str(timer_for_CPU_burst) +" Timer: "+str(timer) + " how long: = " +str(timer +timer_for_CPU_burst))
-        timer_for_CPU_burst-=1
-        timer_for_switch -=1
+        if(ioBuff == 0):
+            timer_for_CPU_burst-=1
+            timer_for_switch -=1
         timer += 1
 
 if __name__ == "__main__":

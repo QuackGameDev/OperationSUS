@@ -35,6 +35,10 @@ def RR(Processes, contextSwitchTime, timeSlice):
     readyBuff = 0
     ioBuff = 0
 
+    avgBurst = [] #Used to calculate the average burst time
+    avgWait = [] #Used to calculate the average wait time
+    avgTurn = [] #Used to calculate the average turnaround time
+
     #Beginning of Algorithm
     print("time 0ms: Simulator started for RR with time slice {ts}ms [Q: empty]".format(ts = timeSlice))
     time = 0
@@ -130,7 +134,6 @@ def RR(Processes, contextSwitchTime, timeSlice):
                 Q.append(x)
                 print("time ", time, "ms: Process ", x , " completed I/O; added to ready queue ",end = "", sep = "")
                 printQueue(Q)
-                cSwitches +=1
             ioDone.clear()
 
         
@@ -155,6 +158,15 @@ def RR(Processes, contextSwitchTime, timeSlice):
     time += contextSwitchTime/2
     print("time ", int(time), "ms: Simulator ended for RR ", end = "", sep = "")
     printQueue(Q)
+
+    simout = open("simout.txt", "w")
+    simout.write("Algorithm RR\n")
+    simout.write("-- average CPU burst time: " + "ms\n")
+    simout.write("-- average wait time: " + "ms\n")
+    simout.write("-- average turnaround time: "+ "ms\n")
+    simout.write("-- total number of context switches: " + str(cSwitches) + "\n")
+    simout.write("-- total number of preemptions: "+ str(preemptions) + "\n")
+    simout.write("-- CPU utilization: " + "%\n")
 
 
 if __name__ == "__main__":

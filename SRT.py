@@ -8,35 +8,7 @@ from GenProcesses import *
 import copy
 import math
 
-def calcTotalCPUTime(Processes):
-    CPUBurstList = Processes.CPU_Burst
-    totalCPUBurstTime = 0
-    # for every processes in the CPU
-    for i in CPUBurstList:
-        # for every CPU Burst in the list
-        for j in i:
-            totalCPUBurstTime += j
-    
-    return totalCPUBurstTime
 
-
-def calAvgCPUBurstTime(Processes):
-    CPUBurstList = Processes.CPU_Burst
-    numBurstList = Processes.num_Burst
-    totalCPUBurstTime = 0
-    totalNumBurst = 0
-    result = 0
-    # for every processes in the CPU
-    for i in CPUBurstList:
-        # for every CPU Burst in the list
-        for j in i:
-            totalCPUBurstTime += j
-            
-    for i in numBurstList:
-        totalNumBurst += i
-    
-    result = ceil((totalCPUBurstTime/totalNumBurst) * 1000)/1000
-    return result
     
 def SRT(Processes, contextSwitch, alpha):
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

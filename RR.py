@@ -7,7 +7,7 @@ Created on Sun Jul 10 21:59:20 2022
 
 from GenProcesses import *
 import copy
-
+import math
 
 
 # parameter: pass in a Processes class
@@ -17,6 +17,8 @@ def RR(Processes, contextSwitchTime, timeSlice):
     processing = []
     completed = []
 
+
+    avgCPUBurstTime = calAvgCPUBurstTime(Processes)
     procLeft = Processes.num_process_
     arrTime = Processes.arrival_Time
     cpuBursts = copy.deepcopy(Processes.CPU_Burst)
@@ -174,9 +176,15 @@ def RR(Processes, contextSwitchTime, timeSlice):
     turnsum = math.ceil(turnsum)
     turnsum = turnsum/1000
 
+    CPUUtilNum = ceil(((calcTotalCPUTime(Processes) / time) * 100) * 1000)/1000
     stats = []
     stats.append("RR")
-    
+    stats.append(avgCPUBurstTime)
+    stats.append(Waittime)
+    stats.append(turnsum)
+    stats.append(cSwitches)
+    stats.append(preemptions)
+    stats.append(CPUUtilNum)
 
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))

@@ -46,8 +46,11 @@ if __name__ == "__main__":
     print()
     SJF_stat = SJF(test_Process, contextSwitch, alpha)
     print()
-    SRT_stat = SRT(test_Process, contextSwitch, alpha)
+    
+    tempProcesses = copy.deepcopy(test_Process)
+    SRT_stat = SRT(tempProcesses, contextSwitch, alpha)
     print()
+    
     RR_stat = RR(test_Process, contextSwitch, timeSlice)
     print()
     outputStats(FCFS_stat, SJF_stat, SRT_stat, RR_stat)

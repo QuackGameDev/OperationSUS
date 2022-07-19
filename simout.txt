@@ -13,16 +13,3 @@ Algorithm SJF
 -- total number of preemptions: 0
 -- CPU utilization: 42.184%
 Algorithm SRT
--- average CPU burst time: 1001.296 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 498
--- total number of preemptions: 0
--- CPU utilization: 42.184%
-Algorithm RR
--- average CPU burst time: 1001.296 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 498
--- total number of preemptions: 0
--- CPU utilization: 41.714%

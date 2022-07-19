@@ -82,9 +82,9 @@ def RR(Processes, contextSwitchTime, timeSlice):
                         #This following line does the math and prints the time it will come out of I/O. It is unnecessarily long
                         print("time ", time, "ms: Process ", processing[0], " switching out of CPU; will block on I/O until time ", 
                         int(time + int(ioBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])] - 1]) + contextSwitchTime/2),"ms " , end = "", sep = "")
-                    
+                        printQueue(Q)             
                     ioOut.append(int(time + int(ioBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])] - 1]) + contextSwitchTime/2))
-                    printQueue(Q)
+
                     IO.append(processing[0])
                     ioBuff = contextSwitchTime/2
                     if(len(Q) > 0):
@@ -114,14 +114,16 @@ def RR(Processes, contextSwitchTime, timeSlice):
             cSwitches +=1
             currStart = time
             oriTime = oriBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]
-            if(oriTime == cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]):
-                print("time ", time, "ms: Process ", processing[0], " started using the CPU for ",
-                int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms burst ", end = "", sep = "")
-            else:
-                print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", 
-                int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+            if(time <= 1000):
+                if(oriTime == cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]):
+                    print("time ", time, "ms: Process ", processing[0], " started using the CPU for ",
+                    int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms burst ", end = "", sep = "")
+                else:
+                    print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", 
+                    int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+                printQueue(Q)
             numContextSwitch += 1
-            printQueue(Q)
+            
         
         
         if(len(IO)>0):
@@ -139,8 +141,9 @@ def RR(Processes, contextSwitchTime, timeSlice):
                 ioDone.sort()
                 for x in ioDone:
                     Q.append(x)
-                    print("time ", time, "ms: Process ", x , " completed I/O; added to ready queue ",end = "", sep = "")
-                    printQueue(Q)
+                    if(time <= 1000):
+                        print("time ", time, "ms: Process ", x , " completed I/O; added to ready queue ",end = "", sep = "")
+                        printQueue(Q)
                 ioDone.clear()
 
         

@@ -213,9 +213,10 @@ def SJF(Processes, contextSwitchTime, Alpha):
         if CPUburst == True and timer_for_switch==0:
             if(timer <= 1000):
                 print("time "+str(timer)+"ms: Process "+str(CPUqueue[0])+" (tau "+str(processesInfo.get(CPUqueue[0]).get("tau"))+"ms) started using the CPU for "+str(processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")])+"ms burst "+print_ready_queue(ready_queue))
+            numContextSwitch += 1
             timer_for_CPU_burst = processesInfo.get(CPUqueue[0]).get("CPUBurst")[processesInfo.get(CPUqueue[0]).get("currentBurstIndex")]
             actual_burst =timer_for_CPU_burst
-            numContextSwitch += 1
+            
             
             #print("CPU Burst start: "+str(timer)+" Process : "+str(CPUqueue[0]) +" Burst timer: "+str(actual_burst))      
 
@@ -233,7 +234,7 @@ def SJF(Processes, contextSwitchTime, Alpha):
                     processesInfo.get(IO_to_ready[i][0])["currentBurstIndex"]+=1
                     IO_to_ready.pop(i)
                     if(CPUburst == False and len(ready_queue)>0 and timer_for_switch<=0):
-                        printcorrectly = True
+                        printcorrectly = True 
                     i-=1
                 i+=1
             if(printcorrectly == True):
@@ -255,8 +256,8 @@ def SJF(Processes, contextSwitchTime, Alpha):
 
         if(len(completed)==numProcess or timer_for_switch<-10000000000):
             timer+=contextSwitch 
-            if(timer <= 1000):
-                print("time "+str(int(timer))+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
+            
+            print("time "+str(int(timer))+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
             allProcessTerminate=True
             CPUUtilNum = ceil(((calcTotalCPUTime(tempProcesses) / timer) * 100) * 1000)/1000
             outputStats("SJF", avgCPUBurstTime, 0, 0, numContextSwitch, preemptionNum, CPUUtilNum)

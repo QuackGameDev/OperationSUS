@@ -7,7 +7,7 @@ Created on Sun Jul 10 21:59:20 2022
 
 from GenProcesses import *
 import copy
-
+import math
 
 
 # parameter: pass in a Processes class
@@ -17,6 +17,8 @@ def RR(Processes, contextSwitchTime, timeSlice):
     processing = []
     completed = []
 
+
+    avgCPUBurstTime = calAvgCPUBurstTime(Processes)
     procLeft = Processes.num_process_
     arrTime = Processes.arrival_Time
     cpuBursts = copy.deepcopy(Processes.CPU_Burst)
@@ -41,7 +43,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
     #Beginning of Algorithm
     print("time 0ms: Simulator started for RR with time slice {ts}ms [Q: empty]".format(ts = timeSlice))
     time = 0
-
+    Waittime=0
     while(procLeft > 0):
 
         for x in arrTime: #Add the processes slowly by arrival times
@@ -63,6 +65,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
                     printQueue(Q)
                     procLeft -=1
                     completed.append(processing[0])
+                    avgTurn.append(time - arrTime[alphabet.index(processing[0])])
                     processing.pop()
                     if(len(Q) > 0):
                         buffer = contextSwitchTime
@@ -158,20 +161,30 @@ def RR(Processes, contextSwitchTime, timeSlice):
             if(readyBuff == 0):
                 Q.append(toReady[0])
                 toReady.pop(0)
+        
+        Waittime+=(len(Q)*1)
         time += 1
     time += contextSwitchTime/2
     print("time ", int(time), "ms: Simulator ended for RR ", end = "", sep = "")
     printQueue(Q)
+    Waittime = Waittime/len(completed)
+    turnsum = 0
+    for x in avgTurn:
+        turnsum += x
+    turnsum = float(turnsum)/ len(avgTurn)
+    turnsum = turnsum * 1000
+    turnsum = math.ceil(turnsum)
+    turnsum = turnsum/1000
 
-    simout = open("simout.txt", "w")
-    simout.write("Algorithm RR\n")
-    simout.write("-- average CPU burst time: " + "ms\n")
-    simout.write("-- average wait time: " + "ms\n")
-    simout.write("-- average turnaround time: "+ "ms\n")
-    simout.write("-- total number of context switches: " + str(cSwitches) + "\n")
-    simout.write("-- total number of preemptions: "+ str(preemptions) + "\n")
-    simout.write("-- CPU utilization: " + "%\n")
-
+    CPUUtilNum = ceil(((calcTotalCPUTime(Processes) / time) * 100) * 1000)/1000
+    stats = []
+    stats.append("RR")
+    stats.append(avgCPUBurstTime)
+    stats.append(Waittime)
+    stats.append(turnsum)
+    stats.append(cSwitches)
+    stats.append(preemptions)
+    stats.append(CPUUtilNum)
 
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))

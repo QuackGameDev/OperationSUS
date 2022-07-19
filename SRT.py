@@ -104,23 +104,24 @@ def SRT(Processes, contextSwitch, alpha):
                     if(procLeft == 0):
                         break
                 else:
-                    if(burstLeft > 1):
-                        print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) completed a CPU burst; ", burstLeft, " bursts to go ", end = "", sep = "")
-                    else:
-                        print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) completed a CPU burst; 1 burst to go ", end = "", sep = "")
-                    printQueue(Q)
+                    if(time <= 1000):
+                        if(burstLeft > 1):
+                            print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) completed a CPU burst; ", burstLeft, " bursts to go ", end = "", sep = "")
+                        else:
+                            print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) completed a CPU burst; 1 burst to go ", end = "", sep = "")
+                        printQueue(Q)   
                     
                     old_tau = taus[alphabet.index(CPU[0])]
                     actual_burst = oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])] - 1]
                     taus[alphabet.index(CPU[0])] = int(math.ceil(alpha * actual_burst +(1-alpha) * old_tau))
                     prepreempt[alphabet.index(CPU[0])] = taus[alphabet.index(CPU[0])]
-                    #if(timer <= 1000):
-                    print("time "+str(time)+"ms: Recalculated tau for process "+str(CPU[0])+": old tau "+str(old_tau)+"ms; new tau "+str(taus[alphabet.index(CPU[0])])+"ms ", end = "", sep = "" )
-                    printQueue(Q)
+                    if(time <= 1000):
+                        print("time "+str(time)+"ms: Recalculated tau for process "+str(CPU[0])+": old tau "+str(old_tau)+"ms; new tau "+str(taus[alphabet.index(CPU[0])])+"ms ", end = "", sep = "" )
+                        printQueue(Q)
 
-                    print("time ", time, "ms: Process ", CPU[0], " switching out of CPU; will block on I/O until time ", 
-                    int(time + int(ioBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])] - 1]) + contextSwitch/2),"ms " , end = "", sep = "")
-                    printQueue(Q)
+                        print("time ", time, "ms: Process ", CPU[0], " switching out of CPU; will block on I/O until time ", 
+                        int(time + int(ioBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])] - 1]) + contextSwitch/2),"ms " , end = "", sep = "")
+                        printQueue(Q)
                     cSwitches+=1
 
 
@@ -138,17 +139,19 @@ def SRT(Processes, contextSwitch, alpha):
             currStart = time
             CPU_burst = True
             oriTime = oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]
-            if(oriTime == cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]):
-                print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) started using the CPU for ",
-                int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms burst ", end = "", sep = "")
-            else:
-                print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) started using the CPU for remaining ", 
-                int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
-            printQueue(Q)
+            if(time <= 1000):
+                if(oriTime == cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]):
+                    print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) started using the CPU for ",
+                    int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms burst ", end = "", sep = "")
+                else:
+                    print("time ", time, "ms: Process ", CPU[0], " (tau ", taus[alphabet.index(CPU[0])], "ms) started using the CPU for remaining ", 
+                    int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+                printQueue(Q)
             if(len(Q) > 0):
                 if(  taus[alphabet.index(CPU[0])] - (oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] - cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]])  > taus[alphabet.index(Q[0])]):
-                    print("time ", time, "ms: Process ", Q[0], " (tau ", taus[alphabet.index(Q[0])], "ms) will preempt ", CPU[0], " ",  end = "", sep = "")
-                    printQueue(Q)
+                    if(time <= 1000):
+                        print("time ", time, "ms: Process ", Q[0], " (tau ", taus[alphabet.index(Q[0])], "ms) will preempt ", CPU[0], " ",  end = "", sep = "")
+                        printQueue(Q)
                     prepreempt[alphabet.index(CPU[0])] = currStart
                     readyBuff = contextSwitch/2
                     toReady.append(CPU[0])
@@ -175,24 +178,24 @@ def SRT(Processes, contextSwitch, alpha):
                 ioDone.sort()
                 for x in ioDone:
                     Q.append(x)
-                    
-                    print("time ", time, "ms: Process ", x , " (tau ", taus[alphabet.index(x)], "ms) completed I/O;",end = "", sep = "")
-                    if(len(CPU) > 0):
+                    if(time <= 1000):
+                        print("time ", time, "ms: Process ", x , " (tau ", taus[alphabet.index(x)], "ms) completed I/O;",end = "", sep = "")
+                        if(len(CPU) > 0):
 
-                        if( taus[alphabet.index(CPU[0])] - (oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] - cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]) > taus[alphabet.index(x)]):
-                            print(" preempting ", CPU[0], " ", end = "", sep = "")
-                            readyBuff = contextSwitch/2
-                            prepreempt[alphabet.index(CPU[0])] = taus[alphabet.index(CPU[0])] - (oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] - cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]])
-                            toReady.append(CPU[0])
-                            CPU.pop()
-                            CPU_burst = False
-                            preemptions +=1
+                            if( taus[alphabet.index(CPU[0])] - (oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] - cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]) > taus[alphabet.index(x)]):
+                                print(" preempting ", CPU[0], " ", end = "", sep = "")
+                                readyBuff = contextSwitch/2
+                                prepreempt[alphabet.index(CPU[0])] = taus[alphabet.index(CPU[0])] - (oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] - cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]])
+                                toReady.append(CPU[0])
+                                CPU.pop()
+                                CPU_burst = False
+                                preemptions +=1
+                            else:
+                                print(" added to ready queue ", end = "", sep = "")
                         else:
                             print(" added to ready queue ", end = "", sep = "")
-                    else:
-                        print(" added to ready queue ", end = "", sep = "")
+                        printQueue(Q)
                     Q.sort(key = sortQueue)
-                    printQueue(Q)
                 ioDone.clear()
 
         if(len(CPU) == 0 and len(toReady) == 0 and ioBuff == 0):

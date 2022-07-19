@@ -46,11 +46,9 @@ if __name__ == "__main__":
     print()
     SJF_stat = SJF(test_Process, contextSwitch, alpha)
     print()
-    #SRT(test_Process, contextSwitch, alpha)
-    SRT_stat = SJF(test_Process, contextSwitch, alpha)
+    SRT_stat = SRT(test_Process, contextSwitch, alpha)
     print()
-    RR_stat = FCFS(test_Process, contextSwitch)
+    RR_stat = RR(test_Process, contextSwitch, timeSlice)
     print()
     outputStats(FCFS_stat, SJF_stat, SRT_stat, RR_stat)
-    #RR(test_Process, contextSwitch, timeSlice)
     

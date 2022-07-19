@@ -231,8 +231,8 @@ def SRT(Processes, contextSwitch, alpha):
     CPUUtilNum = ceil(((calcTotalCPUTime(Processes) / time) * 100) * 1000)/1000    
     stats.append("SRT")
     stats.append(avgCPUBurstTime)
-    stats.append(waittime)
-    stats.append(turntime)
+    stats.append(0)
+    stats.append(0)
     stats.append(cSwitches)
     stats.append(preemptions)
     stats.append(CPUUtilNum)

@@ -183,8 +183,8 @@ def RR(Processes, contextSwitchTime, timeSlice):
     stats = []
     stats.append("RR")
     stats.append(avgCPUBurstTime)
-    stats.append(Waittime)
-    stats.append(turnsum)
+    stats.append(0)
+    stats.append(0)
     stats.append(cSwitches)
     stats.append(preemptions)
     stats.append(CPUUtilNum)

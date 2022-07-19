@@ -1,36 +1,7 @@
-
-Algorithm SJF
--- average CPU burst time: 95.412 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 462
--- total number of preemptions: 0
--- CPU utilization: 39.483%
-Algorithm SJF
--- average CPU burst time: 95.412 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 462
--- total number of preemptions: 0
--- CPU utilization: 39.483%
-Algorithm SJF
--- average CPU burst time: 95.412 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 462
--- total number of preemptions: 0
--- CPU utilization: 39.483%
-Algorithm SJF
--- average CPU burst time: 95.412 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 462
--- total number of preemptions: 0
--- CPU utilization: 39.483%
-Algorithm SJF
--- average CPU burst time: 91.286 ms
--- average wait time: 0.0 ms
--- vaerage turnaround time: 0.0 ms
--- total number of context switches: 14
--- total number of preemptions: 0
--- CPU utilization: 9.157%
+Algorithm RR
+-- average CPU burst time: ms
+-- average wait time: ms
+-- average turnaround time: ms
+-- total number of context switches: 75
+-- total number of preemptions: 3
+-- CPU utilization: %

@@ -18,10 +18,12 @@ def SRT(Processes, contextSwitch, alpha):
     procLeft = Processes.num_process_
     arrTime = Processes.arrival_Time
     cpuBursts = copy.deepcopy(Processes.CPU_Burst)
+    oriBursts = Processes.CPU_Burst
     ioBursts = copy.deepcopy(Processes.IO_Burst)
     numBursts = copy.deepcopy(Processes.num_Burst)
     taus = [Processes.tau for x in range(procLeft)]
-    CPU_burst=True
+    CPU_burst = False
+    currBurst = [0 for x in range(procLeft)] #Keeps track of which burst the processes are in
     CPU = []
     completed = [] #Which processes are done
     IO = [] #What is in the IO
@@ -29,9 +31,13 @@ def SRT(Processes, contextSwitch, alpha):
     P = [] # Preempting
     cSwitches = 0 #The number of times that context switching occurs
     buffer = contextSwitch
-    Working = False
-    CPU_burst_timer =0 
-
+    
+    buffQueue = []
+    toReady = []
+    readyBuff = 0
+    ioBuff = 0
+    ioOut = []
+    
     def sortQueue(e):
         return processesInfo.get(e).get("tau"),ord(e)
 
@@ -42,46 +48,122 @@ def SRT(Processes, contextSwitch, alpha):
             if(x == time):
                 Q.append(alphabet[arrTime.index(x)])
                 Q.sort(key = sortQueue)
-                print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; added to ready queue ", end = "", sep = "")
+                print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; ", end = "", sep = "")
+                
+                if(len(CPU) > 0):
+                    if(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] > cpuBursts[arrTime.index(x)][0]):
+                        print("preempting ", CPU[0], end = "", sep = "")
+                        readyBuff = contextSwitch/2
+                        toReady.append(CPU[0])
+                        CPU.pop()
+                        preemptions +=1
+                    else:
+                        print("added to ready queue ", end = "", sep = "")
+                else:
+                    print("added to ready queue ", end = "", sep = "")
                 printQueue(Q)
         
-        #Checking if there is nothing in the CPU Burst Queue and putting something if there is something
-        if(CPU_burst==False):
-            buffer = contextSwitch
-            CPU.append(Q[0])
-            CPU_burst = True
-
-        
-
-        # Must make a preempting branch just in case in order to print those that are remaining if any processes have been preempted
-        if ( CPU_burst == True and buffer ==0 and len(P)>0):
-            if(Q[0] == P[0][0]):
-                CPU_burst_timer = P[0][1]
-                
-            else:
-                CPU_burst_timer = 
-
-
-        #After the context switch has finished and CPU Burst has been activateed
-        elif(CPU_burst == True and buffer == 0 and len(P)==0):
-            print("time ", time, "ms: Process ", alphabet[arrTime.index(x)], " (tau ", taus[arrTime.index(x)], "ms) arrived; added to ready queue ", end = "", sep = "")
-            CPU_burst_timer = 
-       
+        if(ioBuff > 0):
+            ioBuff-=1
 
         #Check if CPU Burst timer has reached 0 and starts moving it into the IO Queue, must make branches for either if the last CPU Burst or second to last CPU Burst for the Process
-        if(CPU_burst_timer == 0 and CPU_burst == True):
+        if(CPU_burst == True):
+            cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] -= 1
+            if(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] == 0):
+                CPU_burst = False
+                currBurst[alphabet.index(CPU[0])] += 1
+                burstLeft = numBursts[alphabet.index(CPU[0])] - currBurst[alphabet.index(CPU[0])]
+                if(burstLeft == 0):
+                    print("time ", time, "ms: Process ", CPU[0], " terminated ", end = "", sep = "")
+                    printQueue(Q)
+                    procLeft -=1
+                    completed.append(CPU[0])
+                    CPU.pop()
+                    if(len(Q) > 0):
+                        buffer = contextSwitch
+                    if(procLeft == 0):
+                        break
+                else:
+                    if(burstLeft > 1):
+                        print("time ", time, "ms: Process ", CPU[0], " completed a CPU burst; ", burstLeft, " bursts to go ", end = "", sep = "")
+                    else:
+                        print("time ", time, "ms: Process ", CPU[0], " completed a CPU burst; 1 burst to go ", end = "", sep = "")
+                    printQueue(Q)
+                    
+                    print("time ", time, "ms: Process ", CPU[0], " switching out of CPU; will block on I/O until time ", 
+                    int(time + int(ioBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])] - 1]) + contextSwitch/2),"ms " , end = "", sep = "")
+                    
+                    #Add Tau Stuff HERE
+
+                    ioOut.append(int(time + int(ioBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])] - 1]) + contextSwitch/2))
+                    printQueue(Q)
+                    IO.append(CPU[0])
+                    ioBuff = contextSwitch/2
+                    if(len(Q) > 0):
+                        buffer = contextSwitch/2 
+                    CPU.pop()
+        if(buffer == 0): #After the context switch buffer, add things into the CPU
+            buffer = contextSwitch/2
+            CPU.append(buffQueue[0])
+            buffQueue.pop(0)
+            cSwitches +=1
+            currStart = time
+            CPU_burst = True
+            oriTime = oriBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]
+            if(oriTime == cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]):
+                print("time ", time, "ms: Process ", CPU[0], " started using the CPU for ",
+                int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms burst ", end = "", sep = "")
+            else:
+                print("time ", time, "ms: Process ", CPU[0], " started using the CPU for remaining ", 
+                int(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+            printQueue(Q)
 
         #Checking if any IO Bursts are done and then start moving them into standby procedure for moving them back into the ready queue
         if(len(IO)>0):
+            x = 0
+            ioDone = []
+            while(x < len(IO)):
+                if(time == ioOut[x]):
+                    ioDone.append(IO[x])
+                    ioOut.pop(x)
+                    IO.pop(x)
+                    x-=1
+                x+=1
 
-        #Moving those that are in standby from IO queue to ready queue.
-        if(len(IO_R)>0):
-            for i in IO:
-                #Preempting check if Tau -CPU Burst time that's already been used is bigger than the tau that's just been freed from the IO Queue
-                if()
+            if(len(ioDone) > 0):
+                ioDone.sort()
+                for x in ioDone:
+                    Q.append(x)
+                    print("time ", time, "ms: Process ", x , " (tau ", taus[alphabet.index(x)], "ms) completed I/O;",end = "", sep = "")
+                    if(len(CPU) > 0):
+                        if(cpuBursts[alphabet.index(CPU[0])][currBurst[alphabet.index(CPU[0])]] > cpuBursts[arrTime.index(x)[0]]):
+                            print("preempting ", CPU[0], end = "", sep = "")
+                            readyBuff = contextSwitch/2
+                            toReady.append(CPU[0])
+                            CPU.pop()
+                            preemptions +=1
+                        else:
+                            print("added to ready queue ", end = "", sep = "")
+                    else:
+                        print("added to ready queue ", end = "", sep = "")
+                    printQueue(Q)
+                ioDone.clear()
 
-
-        CPU_burst_timer-=1
-        buffer -= 1
+        if(len(CPU) == 0 and len(toReady) == 0 and ioBuff == 0):
+            if(len(Q) > 0 ):
+                buffer -= 1
+                if(buffer == contextSwitch/4 and len(buffQueue) == 0):
+                    buffQueue.append(Q[0])
+                    Q.pop(0)
+            elif(len(buffQueue) == 1):
+                buffer-=1
         time += 1
     print("")
+
+
+
+if __name__ == "__main__":
+    test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
+    test_Process.generateProcesses()
+    test_Process.reorganizeData()
+    SRT(test_Process, int(sys.argv[5]), float(sys.argv[6]))

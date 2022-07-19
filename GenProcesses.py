@@ -94,7 +94,8 @@ class Processes:
             
             info["CPUBurst"] = self.CPU_Burst[i] # a list
             info["IOBurst"] = self.IO_Burst[i] # a list
-        
+            #info["waitTime"] = []
+            #info["turnaroundTime"] = []
             self.reorganizedData[key] = info
 
     # A testing method for puting info into a dict

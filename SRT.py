@@ -97,7 +97,7 @@ def SRT(Processes, contextSwitch, alpha):
                     printQueue(Q)
                     procLeft -=1
                     completed.append(CPU[0])
-                    avgTurn.append(time - arrTime(alphabet.index(CPU[0])))
+                    avgTurn.append(time - arrTime[alphabet.index(CPU[0])])
                     CPU.pop()
                     if(len(Q) > 0):
                         buffer = contextSwitch

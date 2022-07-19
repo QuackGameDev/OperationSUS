@@ -6,6 +6,7 @@ Created on Sun Jul 10 21:59:20 2022
 notes:
 Layout and "if" conditions inspired/provided by Raphael Chung
 """
+from os import stat
 from GenProcesses import *
 import copy
 # this function will give back all occurence of the targetNum in a list
@@ -17,21 +18,6 @@ def allIndexOfTargerNum(targetNum, list):
             allIndex.append(i)
             
     return allIndex
-
-def outputStats(algoName, avgCPUBurst, avgWaitTime, avgTurnaround, numContextSwitch, numPreemptions, CPUUtil):
-    # open a (new) file to write
-    outFile = open("simout.txt", "w")
-    outFile.write("Algorithm {nameAlgo}\n".format(nameAlgo = algoName))
-    outFile.write("-- average CPU burst time: {avgCPUtime} ms\n".format(avgCPUtime = ceil(avgCPUBurst * 1000)/1000))
-    outFile.write("-- average wait time: {avgWait} ms\n".format(avgWait = ceil(avgWaitTime * 1000)/1000))
-    outFile.write("-- vaerage turnaround time: {avgTurn} ms\n".format(avgTurn = ceil(avgTurnaround * 1000)/1000))
-    outFile.write("-- total number of context switches: {numSwitch}\n".format(numSwitch = numContextSwitch))
-    outFile.write("-- total number of preemptions: {premept}\n".format(premept = numPreemptions))
-    
-    
-    # CPU utilization calculation
-    outFile.write("-- CPU utilization: {CPUultil}%\n".format(CPUultil = CPUUtil))
-    outFile.close()
 
 def calcTotalCPUTime(Processes):
     CPUBurstList = Processes.CPU_Burst
@@ -67,7 +53,7 @@ def calAvgCPUBurstTime(Processes):
 # parameter: pass in a Processes class
 def FCFS(Processes, contextSwitchTime):
     """Deep copy the Processes so I can fuck around with without changing the original version"""
-    tempProcesses = copy.copy(Processes)
+    tempProcesses = copy.deepcopy(Processes)
     
     
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -127,7 +113,7 @@ def FCFS(Processes, contextSwitchTime):
     # keep track of number of preemptions
     preemptionNum = 0
     
-    
+    stats = []
     
     
     """Start of the algorithm"""
@@ -288,13 +274,22 @@ def FCFS(Processes, contextSwitchTime):
         if(len(completed) == tempProcesses.num_process_):
             allProcessTerminate = True
             info = "time {time}ms: Simulator ended for FCFS [Q: empty]".format(time = timer + 2)
-            print(info, end = "")
+            print(info)
             CPUUtilNum = ceil(((calcTotalCPUTime(tempProcesses) / timer) * 100) * 1000)/1000
-            outputStats("FCFS", avgCPUBurstTime, 0, 0, numContextSwitch, preemptionNum, CPUUtilNum)
+            
+            stats.append("FCFS")
+            stats.append(avgCPUBurstTime)
+            stats.append(0)
+            stats.append(0)
+            stats.append(numContextSwitch)
+            stats.append(preemptionNum)
+            stats.append(CPUUtilNum)
+            
         CPUBurstTimer -= 1
         timerToSwitch -= 1
         timer += 1
     
+    return stats
     
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))

@@ -215,10 +215,10 @@ def SRT(Processes, contextSwitch, alpha):
         time += 1
     time += contextSwitch/2
     print("time "+str(int(time))+"ms: Simulator ended for SRT ",end = "", sep = "")
-    waittime = waittime/len(completed)
+    waittime = waittime/Processes.num_process_
     for x in avgTurn:
         turntime+=x
-    turntime = turntime/len(completed)
+    turntime = turntime/Processes.num_process_
     
     CPUUtilNum = ceil(((calcTotalCPUTime(Processes) / time) * 100) * 1000)/1000    
     stats.append("SRT")

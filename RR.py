@@ -185,6 +185,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
     stats.append(cSwitches)
     stats.append(preemptions)
     stats.append(CPUUtilNum)
+    return stats
 
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))

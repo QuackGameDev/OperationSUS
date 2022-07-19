@@ -38,21 +38,6 @@ def calcTotalCPUTime(Processes):
     
     return totalCPUBurstTime
 
-def outputStats(algoName, avgCPUBurst, avgWaitTime, avgTurnaround, numContextSwitch, numPreemptions, CPUUtil):
-    # open a (new) file to write
-    outFile = open("simout.txt", "a")
-    outFile.write("Algorithm {nameAlgo}\n".format(nameAlgo = algoName))
-    outFile.write("-- average CPU burst time: {avgCPUtime} ms\n".format(avgCPUtime = ceil(avgCPUBurst * 1000)/1000))
-    outFile.write("-- average wait time: {avgWait} ms\n".format(avgWait = ceil(avgWaitTime * 1000)/1000))
-    outFile.write("-- vaerage turnaround time: {avgTurn} ms\n".format(avgTurn = ceil(avgTurnaround * 1000)/1000))
-    outFile.write("-- total number of context switches: {numSwitch}\n".format(numSwitch = numContextSwitch))
-    outFile.write("-- total number of preemptions: {premept}\n".format(premept = numPreemptions))
-    
-    
-    # CPU utilization calculation
-    outFile.write("-- CPU utilization: {CPUultil}%\n".format(CPUultil = CPUUtil))
-    outFile.close()
-
 def print_ready_queue(ready_queue):
     if(len(ready_queue)==0):
         info="[Q: empty]"
@@ -88,7 +73,7 @@ def calAvgCPUBurstTime(Processes):
 
 def SJF(Processes, contextSwitchTime, Alpha):
     """Deep copy the Processes so I can fuck around with without changing the original version"""
-    tempProcesses = copy.copy(Processes)
+    tempProcesses = copy.deepcopy(Processes)
     
     
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -153,7 +138,7 @@ def SJF(Processes, contextSwitchTime, Alpha):
     # keep track of number of preemptions
     preemptionNum = 0
     
-    
+    stats = []
     
     print("time 0ms: Simulator started for SJF [Q: empty]")
     timer  = 0
@@ -260,7 +245,13 @@ def SJF(Processes, contextSwitchTime, Alpha):
             print("time "+str(int(timer))+"ms: Simulator ended for SJF "+print_ready_queue(ready_queue))
             allProcessTerminate=True
             CPUUtilNum = ceil(((calcTotalCPUTime(tempProcesses) / timer) * 100) * 1000)/1000
-            outputStats("SJF", avgCPUBurstTime, 0, 0, numContextSwitch, preemptionNum, CPUUtilNum)
+            stats.append("FCFS")
+            stats.append(avgCPUBurstTime)
+            stats.append(0)
+            stats.append(0)
+            stats.append(numContextSwitch)
+            stats.append(preemptionNum)
+            stats.append(CPUUtilNum)
 
         if len(IOqueue)>0:
             for i in IOqueue:
@@ -269,7 +260,8 @@ def SJF(Processes, contextSwitchTime, Alpha):
         timer_for_CPU_burst-=1
         timer_for_switch -=1
         timer += 1
-
+    return stats
+    
 if __name__ == "__main__":
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()

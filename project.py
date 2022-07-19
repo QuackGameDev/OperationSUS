@@ -10,8 +10,11 @@ from FCFS import *
 from SJF import *
 from SRT import *
 from RR import *
+from printStats import outputStats
 import sys
-        
+import functools
+print = functools.partial(print, flush=True)
+
         
 if __name__ == "__main__":
     #Error handling
@@ -30,10 +33,24 @@ if __name__ == "__main__":
     # For printing the info of all processes
     test_Process = Processes(int(sys.argv[1]), int(sys.argv[2]), float(sys.argv[3]), int(sys.argv[4]))
     test_Process.generateProcesses()
+    test_Process.reorganizeData()
+    test_Process.print()
+    print("")
+    
     contextSwitch = int(sys.argv[5])
     alpha = float(sys.argv[6])
     timeSlice = int(sys.argv[7])
-    FCFS(test_Process, contextSwitch)
-    SJF(test_Process, contextSwitch, alpha)
-    SRT(test_Process, contextSwitch, alpha)
-    RR(test_Process, contextSwitch, timeSlice)
+    
+    # clear out the simout.txt file
+    FCFS_stat = FCFS(test_Process, contextSwitch)
+    print()
+    SJF_stat = SJF(test_Process, contextSwitch, alpha)
+    print()
+    #SRT(test_Process, contextSwitch, alpha)
+    SRT_stat = SJF(test_Process, contextSwitch, alpha)
+    print()
+    RR_stat = FCFS(test_Process, contextSwitch)
+    print()
+    outputStats(FCFS_stat, SJF_stat, SRT_stat, RR_stat)
+    #RR(test_Process, contextSwitch, timeSlice)
+    

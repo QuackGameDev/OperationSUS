@@ -34,7 +34,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
     toReady = []
     readyBuff = 0
     ioBuff = 0
-
+    numContextSwitch =0
     avgWait = [] #Used to calculate the average wait time
     avgTurn = [] #Used to calculate the average turnaround time
 
@@ -117,6 +117,7 @@ def RR(Processes, contextSwitchTime, timeSlice):
             else:
                 print("time ", time, "ms: Process ", processing[0], " started using the CPU for remaining ", 
                 int(cpuBursts[alphabet.index(processing[0])][currBurst[alphabet.index(processing[0])]]),"ms of ", oriTime, "ms burst ", end = "", sep = "")
+            numContextSwitch += 1
             printQueue(Q)
         
         

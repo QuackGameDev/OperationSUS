@@ -7,36 +7,6 @@ Created on Sun Jul 10 21:59:20 2022
 from GenProcesses import *
 import copy
 import math
-
-def calcTotalCPUTime(Processes):
-    CPUBurstList = Processes.CPU_Burst
-    totalCPUBurstTime = 0
-    # for every processes in the CPU
-    for i in CPUBurstList:
-        # for every CPU Burst in the list
-        for j in i:
-            totalCPUBurstTime += j
-    
-    return totalCPUBurstTime
-
-
-def calAvgCPUBurstTime(Processes):
-    CPUBurstList = Processes.CPU_Burst
-    numBurstList = Processes.num_Burst
-    totalCPUBurstTime = 0
-    totalNumBurst = 0
-    result = 0
-    # for every processes in the CPU
-    for i in CPUBurstList:
-        # for every CPU Burst in the list
-        for j in i:
-            totalCPUBurstTime += j
-            
-    for i in numBurstList:
-        totalNumBurst += i
-    
-    result = ceil((totalCPUBurstTime/totalNumBurst) * 1000)/1000
-    return result
     
 def SRT(Processes, contextSwitch, alpha):
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -73,11 +43,11 @@ def SRT(Processes, contextSwitch, alpha):
     
     
     # list of the total wait time to calculate average wait time
-    totalWaitTime = 0
+    waittime = 0
     
     # list of the total turnaround time to calculate average turnaround time
-    totalTurnaroundTime = 0
-    
+    turntime = 0
+    avgTurn=[]
     # Keep track of number of context switches
     numContextSwitch = 0
     
@@ -127,6 +97,7 @@ def SRT(Processes, contextSwitch, alpha):
                     printQueue(Q)
                     procLeft -=1
                     completed.append(CPU[0])
+                    avgTurn.append(time - arrTime(alphabet.index(CPU[0])))
                     CPU.pop()
                     if(len(Q) > 0):
                         buffer = contextSwitch
@@ -239,16 +210,21 @@ def SRT(Processes, contextSwitch, alpha):
                 Q.append(toReady[0])
                 toReady.pop(0)
                 Q.sort(key = sortQueue)
-
+                
+        waittime+= (len(Q) * 1)
         time += 1
     time += contextSwitch/2
     print("time "+str(int(time))+"ms: Simulator ended for SRT ",end = "", sep = "")
+    waittime = waittime/len(completed)
+    for x in avgTurn:
+        turntime+=x
+    turntime = turntime/len(completed)
     
     CPUUtilNum = ceil(((calcTotalCPUTime(Processes) / time) * 100) * 1000)/1000    
     stats.append("SRT")
     stats.append(avgCPUBurstTime)
-    stats.append(0)
-    stats.append(0)
+    stats.append(waittime)
+    stats.append(turntime)
     stats.append(cSwitches)
     stats.append(preemptions)
     stats.append(CPUUtilNum)
